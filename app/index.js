@@ -1,67 +1,59 @@
-const http = require('http');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
 const logger = require('../system/logger');
 const config = require('../config');
+const _ = require('lodash');
 
-const express = require('express');
 var route = require('./routes');
-const APIError = require('./shared/apiError');
-const ActionReponse = require('./shared/response');
-const { reject } = require('lodash');
+const { APIError } = require('../helpers');
 
-const app = express();
-const server = http.createServer(app);
+const loadExpressApp = (express) => {
+  const app = express();
+  app.set('trust proxy', true);
 
-class ExpressApp {
-  constructor(port) {
-    this.port = port;
-  }
-
-  addMiddlewares() {
-    app.set('trust proxy', true);
-
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-    app.use(helmet());
-    app.use(cors());
-    app.use(
-      morgan('dev', {
-        stream: {
-          write: (message) => logger.info(message),
-        },
-      })
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(helmet());
+  app.use(cors());
+  app.use(
+    morgan(config.logs.morganFormat, {
+      stream: {
+        write: (message) => logger.info(message),
+      },
+    })
+  );
+  app.use(config.api.prefix, route);
+  app.use('*', (req, res, next) => {
+    next(
+      new APIError(
+        `Cant not found ${req.originalUrl} in this server`,
+        config.httpStatus.NotFound
+      )
     );
-    app.use(config.api.prefix, route);
-    app.use('*', (req, res, next) => {
-      next(
-        new APIError(
-          `Cant not found ${req.originalUrl} in this server`,
-          {},
-          config.httpStatus.NotFound
-        )
+  });
+  app.use((err, req, res, next) => {
+    if (err.isJoi === true) {
+      err.details = _.map(
+        err.details,
+        ({ context: { key, value }, message }) => {
+          return {
+            field: key,
+            value,
+            message,
+          };
+        }
       );
+    }
+    logger.error(err.stack);
+    return res.status(err.status || 500).json({
+      success: false,
+      message: _.get(err, 'message', 'Server Error'),
+      details: _.get(err, 'details', undefined),
     });
+  });
 
-    app.use((err, req, res, next) => new ActionReponse(res).error(err));
-  }
+  return app;
+};
 
-  listen() {
-    return new Promise((resolve, reject) => {
-      server.on('error', function (err) {
-        reject(err);
-        return;
-      });
-      app
-        .listen(this.port)
-        .once('listening', () => {
-          logger.info(`Server is listening on ${this.port}`)
-          resolve(true);
-        })
-        .once('error', reject);
-    });
-  }
-}
-
-module.exports = ExpressApp;
+module.exports = loadExpressApp;

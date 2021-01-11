@@ -1,5 +1,3 @@
-const { BadRequest } = require('http-errors');
-
 const result = require('dotenv').config();
 if (result.error) {
   throw new Error('.env file not found');
@@ -8,6 +6,10 @@ if (result.error) {
 module.exports = {
   env: process.env.NODE_ENV,
   port: parseInt(process.env.PORT, 10),
+  https: process.env.HTTPS,
+  database: {
+    uri: process.env.MONGO_URI,
+  },
   logs: {
     level: process.env.LOG_LEVEL,
     morganFormat : process.env.MORGAN_FORMAT,
