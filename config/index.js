@@ -15,6 +15,7 @@ module.exports = {
     morganFormat : process.env.MORGAN_FORMAT,
   },
   jwtSecret: process.env.JWT_SECRET,
+  jwtExpires: process.env.JWT_EXPIRED,
   api: {
     prefix: '/api',
   },

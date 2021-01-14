@@ -33,19 +33,7 @@ const loadExpressApp = (express) => {
     );
   });
   app.use((err, req, res, next) => {
-    if (err.isJoi === true) {
-      err.details = _.map(
-        err.details,
-        ({ context: { key, value }, message }) => {
-          return {
-            field: key,
-            value,
-            message,
-          };
-        }
-      );
-    }
-    logger.error(err.stack);
+    err.status ? {} : logger.error('[Server] Error !!! %o', err);
     return res.status(err.status || 500).json({
       success: false,
       message: _.get(err, 'message', 'Server Error'),
