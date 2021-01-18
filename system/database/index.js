@@ -13,14 +13,13 @@ const loadMongoDb = async () => {
       useUnifiedTopology: true,
       useFindAndModify: false,
     });
-    logger.info(`[Database] Connected successfully on uri : ${uri}`);
+    logger.info(`[Database] Load database successfully on uri : ${uri}`);
     process.on('SIGINT', async () => {
       mongoose.connection.close()
-      process.exit(1);
     });
     return connection.db;
   } catch (error) {
-    logger.error(`[Database] Connected failed on uri : ${uri}`);
+    logger.error(`[Database] Load database failed on uri : ${uri}`);
     throw error;
   }
 }

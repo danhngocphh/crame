@@ -10,12 +10,19 @@ module.exports = {
   database: {
     uri: process.env.MONGO_URI,
   },
+  cache: {
+    uri: process.env.REDIS_URI,
+  },
   logs: {
     level: process.env.LOG_LEVEL,
     morganFormat : process.env.MORGAN_FORMAT,
   },
-  jwtSecret: process.env.JWT_SECRET,
-  jwtExpires: process.env.JWT_EXPIRED,
+  token : {
+    access_secret: process.env.ACCESS_TOKEN_SECRET,
+    access_expired: process.env.ACCESS_TOKEN_EXPIRED,
+    refresh_secret: process.env.REFRESH_TOKEN_SECRET,
+    refresh_expired: process.env.REFRESH_TOKEN_EXPIRED,
+  },
   api: {
     prefix: '/api',
   },
@@ -23,6 +30,7 @@ module.exports = {
     Ok: 200,
     Created: 201,
     BadRequest: 400,
+    Unauthorized: 401,
     NotFound: 404,
     ServerError: 500,
   }

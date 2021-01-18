@@ -15,5 +15,16 @@ route.post(
   Middleware.isValidate(AuthSchema.loginPOST),
   AuthController.login
 );
+route.post(
+  '/refresh-token',
+  Middleware.isValidate(AuthSchema.refeshTokenPOST),
+  AuthController.refreshToken
+);
+route.post(
+  '/logout',
+  Middleware.isValidate(AuthSchema.refeshTokenPOST),
+  Middleware.isAuth,
+  AuthController.logout
+);
 
 module.exports = route;

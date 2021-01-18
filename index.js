@@ -1,11 +1,9 @@
 const http = require('http');
 const https = require('https');
-const express = require('express');
-
 const config = require('./config');
 const logger = require('./system/logger');
 const loadSystem = require('./system');
-const loadExpressApp = require('./app');
+const loadApp = require('./app');
 const createHttp = (app) => {
   const server = http.createServer(app);
   return server;
@@ -22,7 +20,7 @@ const createHttps = (app) => {
 const main = async () => {
   try {
     await loadSystem();
-    const app = loadExpressApp(express);
+    const app = loadApp();
 
     const server = config.https ? createHttp(app) : createHttps(app);
     server.listen(config.port, (err) => {
