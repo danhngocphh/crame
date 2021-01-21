@@ -16,8 +16,7 @@ const isAuth = async (req, res, next) => {
   try {
     const token = getTokenFromHeader(req);
     const { id } = await jwtService.verifyAccessToken(token);
-    const userFound = await userModel.findById(id);
-    const currentUser = userFound.toObject();
+    const currentUser = await userModel.findById(id);
     Reflect.deleteProperty(currentUser, 'password');
     req.currentUser = currentUser;
     next();

@@ -19,7 +19,7 @@ const loadExpress = (route) => {
   app.use(
     morgan(config.logs.morganFormat, {
       stream: {
-        write: (message) => logger.info(message),
+        write: (message) => logger.http(message),
       },
     })
   );

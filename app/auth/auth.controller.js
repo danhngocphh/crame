@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const config = require('../../config');
 const { ActionResponse, APIError } = require('../../helpers');
 const { user: UserModel } = require('../../system/database/models');
+const logger = require('../../system/logger');
 const { jwtService } = require('../../system/services');
 
 const saltRounds = 10;
@@ -24,8 +25,14 @@ const AuthController = {
         throw new APIError('Invalid password', config.httpStatus.NotFound, {
           password: `${userReq.password} is invalid. Try another password`,
         });
-      const access_token = await jwtService.genAccessToken(userFound.id);
-      const refresh_token = await jwtService.genRefreshToken(userFound.id);
+      const [access_token, refresh_token] = await Promise.all([
+        jwtService.genAccessToken(userFound.id),
+        jwtService.genRefreshToken(userFound.id),
+      ]);
+      logger.debug(`All token of user ${userFound.email} is generated : %o`, {
+        access_token,
+        refresh_token,
+      });
       actionResponse.createdDataSuccess({ access_token, refresh_token });
     } catch (error) {
       next(error);
@@ -42,9 +49,11 @@ const AuthController = {
         password: hasedPassword,
         isConfirmed: true,
       });
-      const access_token = await jwtService.genAccessToken(userCreated.id);
-      const refresh_token = await jwtService.genRefreshToken(userCreated.id);
-      await userCreated.save();
+      const [access_token, refresh_token] = await Promise.all([
+        jwtService.genAccessToken(userCreated.id),
+        jwtService.genRefreshToken(userCreated.id),
+        userCreated.save(),
+      ]);
       actionResponse.createdDataSuccess({
         access_token,
         refresh_token,
@@ -69,15 +78,19 @@ const AuthController = {
     try {
       const actionResponse = new ActionResponse(res);
       const {
-        currentUser: { id : currentId },
+        currentUser: { id: currentId },
       } = req;
       const { refreshToken } = req.body;
-      const { id } = await jwtService.verifyRefreshToken(refreshToken)
-      if(currentId !== id) throw new APIError('Invalid refreshtoken', config.httpStatus.BadRequest);
+      const { id } = await jwtService.verifyRefreshToken(refreshToken);
+      if (currentId !== id)
+        throw new APIError(
+          'Refresh token does not match to a access token',
+          config.httpStatus.BadRequest
+        );
       await jwtService.removeRefreshToken(id, refreshToken);
       actionResponse.createdDataSuccess();
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
   confirm: async (req, res, next) => {},

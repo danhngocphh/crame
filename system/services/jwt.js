@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config');
 const { APIError } = require('../../helpers');
 const loadRedisClient = require('../cache');
+const logger = require('../logger');
 
 const { token: tokenConfig } = config;
 const redisClient = loadRedisClient.get();
@@ -47,6 +48,10 @@ exports.genRefreshToken = (userId) => {
         try {
           if (err) reject(err);
           await redisClient.rpush(payload.id, token);
+          const storedRefreshTokens = await redisClient.lrange(payload.id, 0, -1);
+          logger.debug(
+            `All refresh token of userid ${payload.id} : %o`
+          , storedRefreshTokens);
           resolve(token);
         } catch (error) {
           reject(error);
@@ -69,6 +74,9 @@ exports.verifyRefreshToken = (token) => {
             reject(
               new APIError('Unauthorized', config.httpStatus.Unauthorized)
             );
+          logger.debug(
+            `storedRefreshTokens of ${payload.id} : ${storedRefreshTokens}`
+          );
           resolve(payload);
         }
       } catch (error) {
@@ -78,6 +86,6 @@ exports.verifyRefreshToken = (token) => {
   });
 };
 
-exports.removeRefreshToken = async (token, userId) => {
+exports.removeRefreshToken = async (userId, token) => {
   await redisClient.lrem(userId, 1, token);
 };
