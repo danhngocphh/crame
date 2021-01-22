@@ -1,5 +1,5 @@
 const { EventEmitter } = require('events');
-const logger = require('../system/logger');
+const logger = require('../infrastructure/logger');
 let eventEmitter;
 
 module.exports = {

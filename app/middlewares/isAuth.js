@@ -1,6 +1,6 @@
 const config = require('../../config');
-const { user: userModel } = require('../../system/database/models');
-const { jwtService } = require('../../system/services');
+const { user: userModel } = require('../../infrastructure/database/models');
+const { jwtService } = require('../../infrastructure/services');
 
 const getTokenFromHeader = (req) => {
   if (

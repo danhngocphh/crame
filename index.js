@@ -1,8 +1,8 @@
 const http = require('http');
 const https = require('https');
 const config = require('./config');
-const logger = require('./system/logger');
-const loadSystem = require('./system');
+const logger = require('./infrastructure/logger');
+const loadInfrastructure = require('./infrastructure');
 const loadApp = require('./app');
 const createHttp = (app) => {
   const server = http.createServer(app);
@@ -19,7 +19,7 @@ const createHttps = (app) => {
 };
 const main = async () => {
   try {
-    await loadSystem();
+    await loadInfrastructure();
     const app = loadApp();
 
     const server = config.https ? createHttp(app) : createHttps(app);

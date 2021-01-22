@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
 const config = require('../../config');
 const { ActionResponse, APIError } = require('../../helpers');
-const { user: UserModel } = require('../../system/database/models');
-const logger = require('../../system/logger');
-const { jwtService } = require('../../system/services');
+const { user: UserModel } = require('../../infrastructure/database/models');
+const logger = require('../../infrastructure/logger');
+const { jwtService } = require('../../infrastructure/services');
 
 const saltRounds = 10;
 
