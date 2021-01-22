@@ -4,7 +4,7 @@ let eventEmitter;
 
 module.exports = {
   start: () => {
-    ventEmitter = new EventEmitter();
+    eventEmitter = new EventEmitter();
     logger.info('[Events] Load events successfully');
   },
   get: () => eventEmitter,
