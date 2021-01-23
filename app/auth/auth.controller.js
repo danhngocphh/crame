@@ -77,16 +77,8 @@ const AuthController = {
   logout: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const {
-        currentUser: { id: currentId },
-      } = req;
       const { refreshToken } = req.body;
       const { id } = await jwtService.verifyRefreshToken(refreshToken);
-      if (currentId !== id)
-        throw new APIError(
-          'Refresh token does not match to a access token',
-          config.httpStatus.BadRequest
-        );
       await jwtService.removeRefreshToken(id, refreshToken);
       actionResponse.createdDataSuccess();
     } catch (error) {

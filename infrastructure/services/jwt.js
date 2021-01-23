@@ -11,6 +11,10 @@ const genPayload = (userId) => ({
   id: userId,
 });
 
+
+// clear all data in redis
+// redisClient.flushall();
+
 exports.genAccessToken = (userId) => {
   return new Promise((resolve, reject) => {
     const payload = genPayload(userId);
@@ -75,7 +79,7 @@ exports.verifyRefreshToken = (token) => {
               new APIError('Unauthorized', config.httpStatus.Unauthorized)
             );
           logger.debug(
-            `storedRefreshTokens of ${payload.id} : ${storedRefreshTokens}`
+            `storedRefreshTokens of ${payload.id} : %o`, storedRefreshTokens
           );
           resolve(payload);
         }

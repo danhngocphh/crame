@@ -17,6 +17,11 @@ module.exports = {
     level: process.env.LOG_LEVEL,
     morganFormat : process.env.MORGAN_FORMAT,
   },
+  cronjobs: {
+    collection: process.env.DB_COLLECTION,
+    pooltime: process.env.POOL_TIME,
+    concurrency: process.env.concurrency,
+  },
   token : {
     access_secret: process.env.ACCESS_TOKEN_SECRET,
     access_expired: process.env.ACCESS_TOKEN_EXPIRED,

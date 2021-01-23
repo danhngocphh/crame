@@ -23,7 +23,6 @@ route.post(
 route.post(
   '/logout',
   Middleware.isValidate(AuthSchema.refeshTokenPOST),
-  Middleware.isAuth,
   AuthController.logout
 );
 
