@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
+
 const config = require('../../config');
 const { ActionResponse, APIError } = require('../../helpers');
 const { user: UserModel } = require('../../infrastructure/database/models');
 const logger = require('../../infrastructure/logger');
-const { jwtService } = require('../../infrastructure/services');
+const { jwtService, emailService } = require('../../infrastructure/services');
 
 const saltRounds = 10;
 
@@ -85,7 +86,11 @@ const AuthController = {
       next(error);
     }
   },
-  confirm: async (req, res, next) => {},
+  confirm: async (req, res, next) => {
+    const actionResponse = new ActionResponse(res);
+    const info = await emailService.sendMail();
+    actionResponse.getDataSucces({ info });
+  },
   forgetPassword: async (req, res, next) => {},
   refreshPassword: async (req, res, next) => {},
 };

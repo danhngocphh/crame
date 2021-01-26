@@ -28,6 +28,10 @@ module.exports = {
     refresh_secret: process.env.REFRESH_TOKEN_SECRET,
     refresh_expired: process.env.REFRESH_TOKEN_EXPIRED,
   },
+  email : {
+    user: process.env.EMAIL_USER,
+    password: process.env.EMAIL_PASSWORD
+  },
   api: {
     prefix: '/api',
   },

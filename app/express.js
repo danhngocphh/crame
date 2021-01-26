@@ -1,11 +1,11 @@
 const express = require('express');
-
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
+const _ = require('lodash');
+
 const logger = require('../infrastructure/logger');
 const config = require('../config');
-const _ = require('lodash');
 const { APIError } = require('../helpers');
 
 const loadExpress = (route) => {

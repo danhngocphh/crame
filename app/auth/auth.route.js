@@ -25,5 +25,8 @@ route.post(
   Middleware.isValidate(AuthSchema.refeshTokenPOST),
   AuthController.logout
 );
-
+route.post(
+  '/confirm',
+  AuthController.confirm
+)
 module.exports = route;
