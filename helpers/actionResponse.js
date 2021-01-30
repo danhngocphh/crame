@@ -12,6 +12,14 @@ class ActionResponse {
     });
   }
 
+  getDataCrawled(data, _shopname, _categoryid) {
+    return this.res.status(200).json({
+      success: true,
+      msg: "Crawled: " + _shopname +"_" +_categoryid,
+      data,
+    });
+  }
+
   createdDataSuccess(data) {
     return this.res.status(201).json({
       success: true,
