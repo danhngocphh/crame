@@ -4,10 +4,10 @@ const CrawlController = require('./crawl.controller');
 
 const route = Router();
 
-route.post('/shopee-api', CrawlController.getapiProduct_Shopee);
+route.post('/shopee-api', CrawlController.add_API_Product_Shopee);
 
-route.post('/tiki-api', CrawlController.getapiProduct_Tiki);
+route.post('/tiki-api', CrawlController.add_API_Product_Tiki);
 
-route.post('/sendo-api', CrawlController.getapiProduct_Sendo);
+route.post('/sendo-api', CrawlController.add_API_Product_Sendo);
 
 module.exports = route;
