@@ -3,7 +3,7 @@ const config = require('../../config');
 const { APIError } = require('../../helpers');
 
 const isValidate = (schema, property = 'body') => (req, res, next) => {
-  const { error } = schema.validate(req[property], { abortEarly: false });
+  const { error } = schema.validate(req[property], { abortEarly: true });
   if (error) {
     const message = _.map(error.details, 'message').join(',');
     const details = _.map(

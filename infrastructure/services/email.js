@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+const hbs = require('nodemailer-express-handlebars');
+
 const { email } = require('../../config');
 
 const transporter = nodemailer.createTransport({
@@ -8,17 +10,40 @@ const transporter = nodemailer.createTransport({
     pass: email.password,
   },
 });
-let testMailOptions = {
+
+const options = {
+  viewEngine: {
+    layoutsDir: __dirname + '/../../templates/layouts',
+    extname: '.hbs',
+  },
+  extName: '.hbs',
+  viewPath: 'templates',
+};
+
+transporter.use('compile', hbs(options));
+
+const testMailOptions = {
   from: email.user,
   to: 'truongdinhthien260599@gmail.com',
   subject: 'Nodemailer - Test',
-  text: '<h1>Hello word</h2>',
+  template: 'testHell',
+  context: {
+    name: 'TruongThien',
+  },
 };
 
-exports.sendMail = async (template = {}, mailOptions = testMailOptions) => {
-  // TODO: handle this
+exports.sendMailConfirmUser = async ({ email, emailToken }) => {
   try {
-    const info = await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail({
+      from: email.user,
+      to: email,
+      subject: 'Xác thực tài khoản shopping now',
+      template: 'userConfirmation',
+      context: {
+        email,
+        emailToken,
+      },
+    });
     return info;
   } catch (error) {
     throw error;

@@ -20,6 +20,12 @@ const AuthSchema = {
   refeshTokenPOST: Joi.object({
     refreshToken: Joi.string().required(),
   }),
+  resendConfirmPOST: Joi.object({
+    email: Joi.string().email({ minDomainSegments: 2 }).required(),
+  }),
+  confirmEmailPOST: Joi.object({
+    emailToken: Joi.string().required(),
+  }),
 };
 
 module.exports = AuthSchema;

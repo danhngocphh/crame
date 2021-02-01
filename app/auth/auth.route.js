@@ -27,6 +27,12 @@ route.post(
 );
 route.post(
   '/confirm',
+  Middleware.isValidate(AuthSchema.confirmEmailPOST),
   AuthController.confirm
+)
+route.post(
+  '/resend-confirm',
+  Middleware.isValidate(AuthSchema.resendConfirmPOST),
+  AuthController.resendConfirm
 )
 module.exports = route;

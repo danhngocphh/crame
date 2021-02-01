@@ -27,10 +27,15 @@ module.exports = {
     access_expired: process.env.ACCESS_TOKEN_EXPIRED,
     refresh_secret: process.env.REFRESH_TOKEN_SECRET,
     refresh_expired: process.env.REFRESH_TOKEN_EXPIRED,
+    email_secret: process.env.EMAIL_TOKEN_SECRET,
+    email_expired: process.env.EMAIL_TOKEN_EXPIRED,
   },
   email : {
     user: process.env.EMAIL_USER,
-    password: process.env.EMAIL_PASSWORD
+    password: process.env.EMAIL_PASSWORD,
+    template: {
+      userConfirmation: 'userConfirmation'
+    }
   },
   api: {
     prefix: '/api',
