@@ -1,46 +1,37 @@
 const mongoose = require('mongoose');
 
 const store = new mongoose.Schema({
-    _id: {
-        type: Schema.Types.ObjectId,
-        required: true,
-    },
-    Name: {
+    name: {
         type: String,
         required: true,
     },
-    Category: [{
-        _id: {
-            type: Schema.Types.ObjectId,
-            required: true,
-        },
-        Name: {
+    // shopee_77 menFS
+    // shopee_77
+    category: [{
+        name: {
             type: String,
             required: true,
         },
-        ParentId: {
-            type: Array
-        },
-        Description: {
+        description: {
             type: String
         },
-        Status: {
-            type: String,
-            required: true,
+        status: {
+            type: Boolean,
+            default: true,
         }
     }],
-    Url: {
+    url: {
         type: String,
         lowercase: true
     },
-    ImgLogoUrl: {
+    imgLogo: {
         type: String,
         lowercase: true,
         require: true
     },
-    Status: {
-        type: String,
-        require: true
+    status: {
+        type: Boolean,
+        default: true,
     }
 });
 

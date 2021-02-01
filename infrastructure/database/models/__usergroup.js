@@ -18,8 +18,9 @@ const usergroup = new mongoose.Schema({
     required: true,
   },
   status: {
-    type: Boolean,
-    default: true,
+    type: String,
+    enum: ['active', 'lock'],
+    default: 'active'
   }
 });
 

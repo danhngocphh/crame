@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { role } = require('../enum');
 
 const user = new mongoose.Schema({
   name: {
@@ -14,6 +15,11 @@ const user = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  role: {
+    type: String,
+    enum: [role.admin, role.customer],
+    default: role.customer
   },
   isConfirmed: {
     type: Boolean,

@@ -1,7 +1,8 @@
 const axios = require('axios').default;
 const { APIError } = require('../../../helpers');
 const config = require('../../../config');
-const _ = require('lodash')
+const _ = require('lodash');
+const ObjectID = require('mongodb').ObjectID;
 
 // clear all data in redis
 // redisClient.flushall();
@@ -18,10 +19,10 @@ exports.getapiProduct_Shopee = (categoryid, limit) => {
                 }
             );
             const _products = _.map(data.data.items, o => ({
-                id: o.itemid,
-                storeid: "shopee",
-                categoryid: "shopee_" + categoryid,
-                slug: "...",
+                remoteId: o.itemid,
+                storeId: new ObjectID("60182f422155bc700bf3a479"),
+                rootCategoryId: new ObjectID("601830ac2155bc700bf3a47a"),
+                categoryId: "shopee_" + categoryid,
                 url: "https://shopee.vn/product/" + o.shopid + "/" + o.itemid,
                 image: "https://cf.shopee.vn/file/" + o.image,
                 name: o.name,
