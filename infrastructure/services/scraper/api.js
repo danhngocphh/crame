@@ -20,7 +20,7 @@ exports.getapiProduct_Shopee = (categoryid, limit) => {
             );
             const _products = _.map(data.data.items, o => ({
                 remoteId: o.itemid,
-                storeId: new ObjectID("60182f422155bc700bf3a479"),
+                storeId: new ObjectID("601974473bb314a8f475e723"),
                 rootCategoryId: new ObjectID("601830ac2155bc700bf3a47a"),
                 categoryId: "shopee_" + categoryid,
                 url: "https://shopee.vn/product/" + o.shopid + "/" + o.itemid,
@@ -39,7 +39,7 @@ exports.getapiProduct_Shopee = (categoryid, limit) => {
     })
 };
 
-exports.getapiProduct_Tiki = (categoryid, limit) => {
+exports.getapiProduct_Sendo = (categoryid, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const data = await axios.get(
@@ -51,18 +51,18 @@ exports.getapiProduct_Tiki = (categoryid, limit) => {
                 }
               );
               const _products =  _.map(data.data.data, o => ({
-                id: o.id,
-                storeid: "sendo",
-                categoryid: "sendo_" + categoryid,
-                slug: "...",
+                remoteId: o.id,
+                storeId: new ObjectID("6019758e3bb314a8f475e724"),
+                rootCategoryId: new ObjectID("601830ac2155bc700bf3a47a"),
+                categoryId: "sendo_" + categoryid,
                 url: "https://www.sendo.vn/" + o.category_path,
                 image: o.image,
                 name: o.name,
                 price: o.sale_price_min,
-                pricemin: o.sale_price_min,
-                pricemax: o.sale_price_max,
+                priceMin: o.sale_price_min,
+                priceMax: o.sale_price_max,
                 brand: "...",
-                type: o.product_type
+                type: o.product_type.toString()
               }))
             resolve(_products);
         } catch (error) {
@@ -71,7 +71,7 @@ exports.getapiProduct_Tiki = (categoryid, limit) => {
     })
 };
 
-exports.getapiProduct_Sendo = (categoryid, limit) => {
+exports.getapiProduct_Tiki = (categoryid, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const data = await axios.get(
@@ -83,16 +83,16 @@ exports.getapiProduct_Sendo = (categoryid, limit) => {
                 }
             );
             const _products = _.map(data.data.data, o => ({
-                id: o.id,
-                storeid: "tiki",
-                categoryid: "tiki_" + categoryid,
-                slug: "...",
+                remoteId: o.id,
+                storeId: new ObjectID("6019734d3bb314a8f475e722"),
+                rootCategoryId: new ObjectID("601830ac2155bc700bf3a47a"),
+                categoryId: "tiki_" + categoryid,
                 url: "http://tiki.vn/product/" + o.id,
                 image: o.thumbnail_url,
                 name: o.name,
                 price: o.price,
-                pricemin: o.price,
-                pricemax: o.price,
+                priceMin: o.price,
+                priceMax: o.price,
                 brand: o.brand_name,
                 type: o.type
             }))

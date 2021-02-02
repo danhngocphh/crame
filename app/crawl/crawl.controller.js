@@ -11,8 +11,8 @@ const CrawlController = {
       const { body: dataReq } = req;
       const _products = await scraperAPI.getapiProduct_Shopee(dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
-        _.map(_products, o => {
-          ModelProduct.findOne({ id: o.id }).then((result)=>{
+        await _.map(_products, o => {
+          ModelProduct.findOne({ idremoteId: o.id }).then((result)=>{
             if(!result){
               let _creatProducts = new ModelProduct(o);
               _creatProducts.save();
@@ -33,8 +33,8 @@ const CrawlController = {
       const { body: dataReq } = req;
       const _products = await scraperAPI.getapiProduct_Tiki(dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
-        _.map(_products, o => {
-          ModelProduct.findOne({ id: o.id }).then((result)=>{
+        await _.map(_products, o => {
+          ModelProduct.findOne({ remoteId: o.id }).then((result)=>{
             if(!result){
               let _creatProducts = new ModelProduct(o);
               _creatProducts.save();
@@ -55,8 +55,8 @@ const CrawlController = {
       const { body: dataReq } = req;
       const _products = await scraperAPI.getapiProduct_Sendo(dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
-        _.map(_products, o => {
-          ModelProduct.findOne({ id: o.id }).then((result)=>{
+        await _.map(_products, o => {
+          ModelProduct.findOne({ remoteId: o.id }).then((result)=>{
             if(!result){
               let _creatProducts = new ModelProduct(o);
               _creatProducts.save();

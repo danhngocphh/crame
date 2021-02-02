@@ -8,11 +8,11 @@ const store = new mongoose.Schema({
     // shopee_77 menFS
     // shopee_77
     category: [{
-        name: {
-            type: String,
+        id: {
+            type: Number,
             required: true,
         },
-        description: {
+        name: {
             type: String
         },
         status: {
