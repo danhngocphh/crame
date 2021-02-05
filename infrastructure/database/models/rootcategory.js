@@ -4,7 +4,7 @@ const rootcategory = new mongoose.Schema({
     // men_FS
     name: {
         type: String,
-        required: true
+        unique: true
     },
     //shopee_77
     //tiki_123/
@@ -27,17 +27,17 @@ const rootcategory = new mongoose.Schema({
     //     }
     // }],
     // 
-    childCategory: [{
-        categoryId: Number,
-        shopName: String
-    }],
-    description: {
-        type: String
-    },
-    isActive: {
-        type: Boolean,
-        default: true
-    }
+    // childCategory: [{
+    //     categoryId: Number,
+    //     shopName: String
+    // }],
+    // description: {
+    //     type: String
+    // },
+    // isActive: {
+    //     type: Boolean,
+    //     default: true
+    // }
 });
 
-module.exports = mongoose.model('rootcategory', rootcategory);
+module.exports = mongoose.model('rootcategories', rootcategory);

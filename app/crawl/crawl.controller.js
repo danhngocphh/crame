@@ -4,7 +4,7 @@ const { getProductAPI } = require('../../infrastructure/services');
 const _ = require('lodash');
 
 
-const CrawlController = {
+const CrawlController ={
   add_API_Product_Shopee: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
@@ -31,7 +31,7 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      const _products = await getProductAPI.Tiki(dataReq.categoryid,dataReq.limit);
+      const _products = await getProductAPI.Tiki(dataReq.storename, dataReq.namerootcategory,dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
         await _.map(_products, o => {
           ModelProduct.findOne({ remoteId: o.id }).then((result)=>{
@@ -53,7 +53,7 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      const _products = await getProductAPI.Sendo(dataReq.categoryid,dataReq.limit);
+      const _products = await getProductAPI.Sendo(dataReq.storename, dataReq.namerootcategory,dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
         await _.map(_products, o => {
           ModelProduct.findOne({ remoteId: o.id }).then((result)=>{

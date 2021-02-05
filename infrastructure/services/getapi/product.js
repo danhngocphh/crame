@@ -49,8 +49,8 @@ const { store: StoreModel, rootcategory: rootCategoryModel } = require('../../da
 exports.Shopee = (storename, nameRootCategory, categoryid, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
+            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
             const store = await StoreModel.findOne({ name: storename });
-            // const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
             const data = await axios.get(
                 store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit +  store.dataCallAPI.urlFooter,
                 {
@@ -62,8 +62,7 @@ exports.Shopee = (storename, nameRootCategory, categoryid, limit) => {
             const _products = _.map(data.data.items, o => ({
                 remoteId: o.itemid,
                 storeId: new ObjectID(store.id),
-                rootCategoryId: new ObjectID("601830ac2155bc700bf3a47a"),
-                categoryId: store.name + "_" + categoryid,
+                rootCategoryId: new ObjectID(rootCategory.id),
                 url: store.dataCallAPI.urlProduct + o.shopid + "/" + o.itemid,
                 image: store.dataCallAPI.imageProduct + o.image,
                 name: o.name,
@@ -80,23 +79,24 @@ exports.Shopee = (storename, nameRootCategory, categoryid, limit) => {
     })
 };
 
-exports.Sendo = (categoryid, limit) => {
+exports.Sendo = (storename, nameRootCategory, categoryid, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
+            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            const store = await StoreModel.findOne({ name: storename });
             const data = await axios.get(
-                'https://searchlist-api.sendo.vn/web/categories/' + categoryid + '/products?listing_algo=algo13&page=1&platform=web&size='+ limit,
+                store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit,
                 {
                   headers: {
-                    'Referer': 'https://www.sendo.vn/'
+                    'Referer': store.url
                   }
                 }
               );
               const _products =  _.map(data.data.data, o => ({
                 remoteId: o.id,
-                storeId: new ObjectID("6019758e3bb314a8f475e724"),
-                rootCategoryId: new ObjectID("601830ac2155bc700bf3a47a"),
-                categoryId: "sendo_" + categoryid,
-                url: "https://www.sendo.vn/" + o.category_path,
+                storeId: new ObjectID(store.id),
+                rootCategoryId: new ObjectID(rootCategory.id),
+                url: store.dataCallAPI.urlProduct + o.category_path,
                 image: o.image,
                 name: o.name,
                 price: o.sale_price_min,
@@ -112,23 +112,24 @@ exports.Sendo = (categoryid, limit) => {
     })
 };
 
-exports.Tiki = (categoryid, limit) => {
+exports.Tiki = (storename, nameRootCategory, categoryid, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
+            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            const store = await StoreModel.findOne({ name: storename });
             const data = await axios.get(
-                'https://tiki.vn/api/v2/products?category=' + categoryid + '&limit=' + limit,
+                store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit,
                 {
                     headers: {
-                        'Referer': 'https://tiki.vn'
+                        'Referer': store.url
                     }
                 }
             );
             const _products = _.map(data.data.data, o => ({
                 remoteId: o.id,
-                storeId: new ObjectID("6019734d3bb314a8f475e722"),
-                rootCategoryId: new ObjectID("601830ac2155bc700bf3a47a"),
-                categoryId: "tiki_" + categoryid,
-                url: "http://tiki.vn/product/" + o.id,
+                storeId: new ObjectID(store.id),
+                rootCategoryId: new ObjectID(rootCategory.id),
+                url: store.dataCallAPI.urlProduct + o.id,
                 image: o.thumbnail_url,
                 name: o.name,
                 price: o.price,
