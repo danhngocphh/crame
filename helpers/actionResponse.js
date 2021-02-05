@@ -12,13 +12,6 @@ class ActionResponse {
     });
   }
 
-  getDataFalse(_shopname, _categoryid) {
-    return this.res.status(400).json({
-      success: false,
-      msg: "Cant get data from " + _shopname +"_" +_categoryid,
-    });
-  }
-
   getDataCrawled(data, _shopname, _categoryid) {
     return this.res.status(200).json({
       success: true,
