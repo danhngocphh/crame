@@ -1,6 +1,6 @@
 const { ActionResponse } = require('../../helpers');
 const { product: ModelProduct } = require('../../infrastructure/database/models');
-const { scraperAPI } = require('../../infrastructure/services');
+const { getProductAPI } = require('../../infrastructure/services');
 const _ = require('lodash');
 
 
@@ -9,7 +9,7 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      const _products = await scraperAPI.getapiProduct_Shopee(dataReq.categoryid,dataReq.limit);
+      const _products = await getProductAPI.Shopee(dataReq.storename, dataReq.namerootcategory,dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
         await _.map(_products, o => {
           ModelProduct.findOne({ idremoteId: o.id }).then((result)=>{
@@ -19,7 +19,7 @@ const CrawlController = {
             }
           });
       })
-      actionResponse.getDataCrawled(_products, "shoppe", dataReq.categoryid);
+      actionResponse.getDataCrawled(_products, "shopee", dataReq.categoryid);
       }else{
         actionResponse.getDataFalse("shopee", dataReq.categoryid)
       }
@@ -31,7 +31,7 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      const _products = await scraperAPI.getapiProduct_Tiki(dataReq.categoryid,dataReq.limit);
+      const _products = await getProductAPI.Tiki(dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
         await _.map(_products, o => {
           ModelProduct.findOne({ remoteId: o.id }).then((result)=>{
@@ -53,7 +53,7 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      const _products = await scraperAPI.getapiProduct_Sendo(dataReq.categoryid,dataReq.limit);
+      const _products = await getProductAPI.Sendo(dataReq.categoryid,dataReq.limit);
       if(_products.length > 0){
         await _.map(_products, o => {
           ModelProduct.findOne({ remoteId: o.id }).then((result)=>{

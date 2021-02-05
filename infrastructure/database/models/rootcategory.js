@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const rootCategory = new mongoose.Schema({
+const rootcategory = new mongoose.Schema({
     // men_FS
     name: {
         type: String,
@@ -8,10 +8,10 @@ const rootCategory = new mongoose.Schema({
     },
     //shopee_77
     //tiki_123/
-    parent : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref: "rootcategory"
-    },
+    // parent : {
+    //     type : mongoose.Schema.Types.ObjectId,
+    //     ref: "rootcategory"
+    // },
     // childCategory: [{
     //     name: {
     //         type: String,
@@ -34,10 +34,10 @@ const rootCategory = new mongoose.Schema({
     description: {
         type: String
     },
-    status: {
+    isActive: {
         type: Boolean,
         default: true
     }
 });
 
-module.exports = mongoose.model('rootcategory', rootCategory);
+module.exports = mongoose.model('rootcategory', rootcategory);

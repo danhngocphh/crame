@@ -5,6 +5,7 @@ const product = new mongoose.Schema({
   remoteId: {
     type: String,
     required: true,
+    unique: true
   },
   storeId: {
     type: Schema.Types.ObjectId,
@@ -45,7 +46,7 @@ const product = new mongoose.Schema({
   brand: String,
   type: String,
   productCompare: String,
-  active: {
+  isActive: {
     type: Boolean,
     default: true
   }

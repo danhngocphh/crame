@@ -1,9 +1,9 @@
 const jwtService = require('./jwt');
 const emailService = require('./email');
-const scraperAPI = require('./scraper/api');
+const getProductAPI = require('./getapi/product');
 
 module.exports = {
     jwtService,
     emailService,
-    scraperAPI
+    getProductAPI
 }

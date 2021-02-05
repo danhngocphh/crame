@@ -4,6 +4,7 @@ const store = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        unique: true
     },
     // shopee_77 menFS
     // shopee_77
@@ -11,9 +12,12 @@ const store = new mongoose.Schema({
         id: {
             type: Number,
             required: true,
+            unique: true
         },
         name: {
-            type: String
+            type: String,
+            required: true,
+            unique: true
         },
         status: {
             type: Boolean,
@@ -29,10 +33,17 @@ const store = new mongoose.Schema({
         lowercase: true,
         require: true
     },
-    status: {
+    dataCallAPI:{
+        urlHeader: { type: String,  trim: true },
+        urlMiddle: { type: String,  trim: true },
+        urlFooter: { type: String,  trim: true },
+        urlProduct: { type: String,  trim: true },
+        imageProduct:{ type: String,  trim: true }
+    },
+    isActive: {
         type: Boolean,
         default: true,
     }
 });
 
-module.exports = mongoose.model('store', store);
+module.exports = mongoose.model('stores', store);
