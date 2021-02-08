@@ -3,12 +3,12 @@ const _ = require('lodash');
 
 
 exports.product = (_products) => {
-    _.map(_products, o => {
+    _products.forEach(o => {
         ModelProduct.findOne({ idremoteId: o.id }).then((result) => {
             if (!result) {
                 let _creatProducts = new ModelProduct(o);
                 _creatProducts.save();
-            }
+            } 
         });
-    })
+    });
 };

@@ -1,13 +1,14 @@
 const { Router } = require('express');
 const CrawlController = require('./crawl.controller');
-// const Middleware = require('../middlewares');
+const Middleware = require('../middlewares');
+const CrawlSchema = require('./crawl.schema');
 
 const route = Router();
 
-route.post('/shopee-api', CrawlController.add_API_Product_Shopee);
-
-route.post('/tiki-api', CrawlController.add_API_Product_Tiki);
-
-route.post('/sendo-api', CrawlController.add_API_Product_Sendo);
+route.post(
+    '/apiproduct',
+    Middleware.isValidate(CrawlSchema.apiProductPOST),
+    CrawlController.callApiProduct
+);
 
 module.exports = route;
