@@ -11,4 +11,11 @@ route.post(
     CrawlController.callApiProduct
 );
 
+route.post(
+    '/apicategory',
+    // Middleware.isValidate(CrawlSchema.apiProductPOST),
+    CrawlController.callApiCategory
+);
+
+
 module.exports = route;

@@ -20,6 +20,14 @@ class ActionResponse {
     });
   }
 
+  getCategoryCrawled(data, _shopname) {
+    return this.res.status(200).json({
+      success: true,
+      msg: "Crawled List Category : " + _shopname,
+      data,
+    });
+  }
+
   createdDataSuccess(data) {
     return this.res.status(201).json({
       success: true,

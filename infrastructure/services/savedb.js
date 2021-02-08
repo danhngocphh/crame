@@ -1,4 +1,4 @@
-const { product: ModelProduct } = require('../database/models');
+const { product: ModelProduct, store: ModelStore } = require('../database/models');
 const _ = require('lodash');
 
 
@@ -10,5 +10,15 @@ exports.product = (_products) => {
                 _creatProducts.save();
             } 
         });
+    });
+};
+
+exports.category = async (storeName ,_category) => {
+    await ModelStore.update({ name: storeName }, { $set: { category: _category } }, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
+            return
+        }
     });
 };
