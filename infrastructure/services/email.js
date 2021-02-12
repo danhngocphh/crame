@@ -1,13 +1,12 @@
 const nodemailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
 
-const { email } = require('../../config');
-
+const { email: emailConfig } = require('../../config');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: email.user,
-    pass: email.password,
+    user: emailConfig.user,
+    pass: emailConfig.password,
   },
 });
 
@@ -23,7 +22,7 @@ const options = {
 transporter.use('compile', hbs(options));
 
 const testMailOptions = {
-  from: email.user,
+  from: emailConfig.user,
   to: 'truongdinhthien260599@gmail.com',
   subject: 'Nodemailer - Test',
   template: 'testHell',
@@ -35,10 +34,28 @@ const testMailOptions = {
 exports.sendMailConfirmUser = async ({ email, emailToken }) => {
   try {
     const info = await transporter.sendMail({
-      from: email.user,
+      from: emailConfig.user,
       to: email,
       subject: 'Xác thực tài khoản shopping now',
-      template: 'userConfirmation',
+      template: emailConfig.template.userConfirmation,
+      context: {
+        email,
+        emailToken,
+      },
+    });
+    return info;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.sendMailForgetPassword = async ({ email, emailToken }) => {
+  try {
+    const info = await transporter.sendMail({
+      from: emailConfig.user,
+      to: email,
+      subject: 'Quên mất khẩu shopping now',
+      template: emailConfig.template.forgetPassword,
       context: {
         email,
         emailToken,

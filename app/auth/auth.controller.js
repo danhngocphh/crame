@@ -13,7 +13,9 @@ const AuthController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: userReq } = req;
-      const userFound = await UserModel.findOne({ email: userReq.email });
+      const userFound = await UserModel.findOne({ email: userReq.email })
+        .lean()
+        .exec();
       if (userFound == null)
         throw new APIError('User not found', config.httpStatus.NotFound, {
           email: `${userReq.email} not exist. Try another email`,
@@ -23,13 +25,13 @@ const AuthController = {
         userFound.password
       );
       if (!verifyPassword)
-        throw new APIError('Invalid password', config.httpStatus.NotFound, {
-          password: `${userReq.password} is invalid. Try another password`,
+        throw new APIError('Invalid password', config.httpStatus.BadRequest, {
+          password: `Password is invalid. Try another password`,
         });
       if (!userFound.isConfirmed) {
         logger.silly('The user is not confirmed');
-        throw new APIError('not-confirm', config.httpStatus.NotFound, {
-          email: `${userReq.email} is not confirmed. Please check your email`,
+        throw new APIError('not-confirm', config.httpStatus.BadRequest, {
+          email: `${userReq.email} is not confirmed. Try another email`,
         });
       } else {
         const [access_token, refresh_token] = await Promise.all([
@@ -55,23 +57,27 @@ const AuthController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: userReq } = req;
-      const hasedPassword = await bcrypt.hash(userReq.password, saltRounds);
+      const hashedPassword = await bcrypt.hash(userReq.password, saltRounds);
       const userFound = await UserModel.findOne({ email: userReq.email });
       if (userFound != null || userReq.email == config.email.user)
-        throw new APIError('User already exist', config.httpStatus.NotFound, {
+        throw new APIError('User already exist', config.httpStatus.BadRequest, {
           email: `${userReq.email} is existed. Try another email`,
         });
       const userCreated = new UserModel({
         ...userReq,
-        password: hasedPassword,
+        password: hashedPassword,
         isConfirmed: false,
       });
-      const [email_token] = await Promise.all([
+      const [emailToken] = await Promise.all([
         jwtService.genEmailToken(userCreated),
         userCreated.save(),
       ]);
+      const infoEmail = await emailService.sendMailConfirmUser({
+        email: userCreated.email,
+        emailToken,
+      });
       actionResponse.createdDataSuccess({
-        email_token,
+        infoEmail,
         userId: userCreated.id,
       });
     } catch (error) {
@@ -105,11 +111,13 @@ const AuthController = {
       const actionResponse = new ActionResponse(res);
       const { emailToken } = req.body;
       const { id } = await jwtService.verifyEmailToken(emailToken);
-      const result = await UserModel.findByIdAndUpdate(
-        id,
-        { isConfirmed: true, new : true }
-      ).exec();
-      actionResponse.createdDataSuccess({ result });
+      const { password, ...result } = (
+        await UserModel.findByIdAndUpdate(id, {
+          isConfirmed: true,
+          new: true,
+        }).exec()
+      ).toObject();
+      actionResponse.createdDataSuccess({ ...result });
     } catch (error) {
       next(error);
     }
@@ -128,7 +136,7 @@ const AuthController = {
           `The ${email} is already confirm`,
           config.httpStatus.BadRequest,
           {
-            email: `${userReq.email} not exist. Try another email`,
+            email: `${email} is already confirm`,
           }
         );
       const emailToken = await jwtService.genEmailToken(userFound);
@@ -136,13 +144,47 @@ const AuthController = {
         email,
         emailToken,
       });
-      actionResponse.createdDataSuccess({ infoEmail });
+      actionResponse.createdDataSuccess({ ...infoEmail });
     } catch (error) {
       next(error);
     }
   },
-  forgetPassword: async (req, res, next) => {},
-  refreshPassword: async (req, res, next) => {},
+  forgetPassword: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { email } = req.body;
+      const userFound = await UserModel.findOne({ email });
+      if (userFound == null)
+        throw new APIError('User not found', config.httpStatus.NotFound, {
+          email: `${email} not exist. Try another email`,
+        });
+      const emailToken = await jwtService.genEmailToken(userFound);
+      const infoEmail = await emailService.sendMailForgetPassword({
+        email,
+        emailToken,
+      });
+      actionResponse.createdDataSuccess({ ...infoEmail });
+    } catch (error) {
+      next(error);
+    }
+  },
+  refreshPassword: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { body: userReq } = req;
+      const hashedPassword = await bcrypt.hash(userReq.password, saltRounds);
+      const { id } = await jwtService.verifyEmailToken(userReq.emailToken);
+      const { password, ...result } = (
+        await UserModel.findByIdAndUpdate(id, {
+          password: hashedPassword,
+          new: true,
+        }).exec()
+      ).toObject();
+      actionResponse.createdDataSuccess({ ...result });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = AuthController;

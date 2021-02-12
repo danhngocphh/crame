@@ -34,7 +34,8 @@ module.exports = {
     user: process.env.EMAIL_USER,
     password: process.env.EMAIL_PASSWORD,
     template: {
-      userConfirmation: 'userConfirmation'
+      userConfirmation: 'userConfirmation',
+      forgetPassword: 'forgetPassword',
     }
   },
   api: {

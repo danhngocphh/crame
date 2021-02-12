@@ -17,22 +17,32 @@ route.post(
 );
 route.post(
   '/refresh-token',
-  Middleware.isValidate(AuthSchema.refeshTokenPOST),
+  Middleware.isValidate(AuthSchema.refreshTokenPOST),
   AuthController.refreshToken
 );
 route.post(
   '/logout',
-  Middleware.isValidate(AuthSchema.refeshTokenPOST),
+  Middleware.isValidate(AuthSchema.refreshTokenPOST),
   AuthController.logout
 );
 route.post(
   '/confirm',
   Middleware.isValidate(AuthSchema.confirmEmailPOST),
   AuthController.confirm
-)
+);
 route.post(
   '/resend-confirm',
   Middleware.isValidate(AuthSchema.resendConfirmPOST),
   AuthController.resendConfirm
-)
+);
+route.post(
+  '/forget-password',
+  Middleware.isValidate(AuthSchema.forgetPasswordPOST),
+  AuthController.forgetPassword
+);
+route.post(
+  '/refresh-password',
+  Middleware.isValidate(AuthSchema.refreshPasswordPOST),
+  AuthController.refreshPassword
+);
 module.exports = route;
