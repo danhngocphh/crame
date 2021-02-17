@@ -12,20 +12,20 @@ const rootcategory = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref: "rootcategory"
     },
-    childCategory: [{
-        name: {
-            type: String,
-            required: true,
-        },
-        //["shopee","tiki",...]
-        listId: [{
-            name: String
-        }],
-        status: {
-            type: Boolean,
-            default: true
-        }
-    }],
+    // childCategory: [{
+    //     name: {
+    //         type: String,
+    //         required: true,
+    //     },
+    //     //["shopee","tiki",...]
+    //     listId: [{
+    //         name: String
+    //     }],
+    //     status: {
+    //         type: Boolean,
+    //         default: true
+    //     }
+    // }],
     
     childCategory: [{
         categoryId: Number,
