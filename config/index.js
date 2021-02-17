@@ -26,6 +26,9 @@ module.exports = {
   api: {
     prefix: '/api',
   },
+  // crawl: {
+  //   prefix: '/crawl',
+  // },
   httpStatus: {
     Ok: 200,
     Created: 201,

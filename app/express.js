@@ -24,6 +24,10 @@ const loadExpress = (route) => {
     })
   );
   app.use(config.api.prefix, route);
+  // app.use(config.crawl.prefix, route);
+  app.get('/crawl', (req, res, next) => {
+    res.send('hello woed!!');
+  });
   app.use('*', (req, res, next) => {
     next(
       new APIError(
