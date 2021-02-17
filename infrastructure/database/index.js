@@ -5,7 +5,7 @@ const logger = require('../logger');
 require('./models');
 
 const loadMongoDb = async () => {
-  const uri = config.database.uri
+  const uri = config.database.uri;
   try {
     const { connection } = await mongoose.connect(uri, {
       useNewUrlParser: true,
@@ -14,14 +14,11 @@ const loadMongoDb = async () => {
       useFindAndModify: false,
     });
     logger.info(`[Database] Load database successfully on uri : ${uri}`);
-    process.on('SIGINT', async () => {
-      mongoose.connection.close()
-    });
     return connection.db;
   } catch (error) {
-    logger.error(`[Database] Load database failed on uri : ${uri}`);
+    logger.error(`[Database] Load database failed on uri : ${uri} %o`, err);
     throw error;
   }
-}
+};
 
 module.exports = loadMongoDb;

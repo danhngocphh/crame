@@ -1,11 +1,11 @@
 const express = require('express');
-
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
-const logger = require('../system/logger');
-const config = require('../config');
 const _ = require('lodash');
+
+const logger = require('../infrastructure/logger');
+const config = require('../config');
 const { APIError } = require('../helpers');
 
 const loadExpress = (route) => {
@@ -19,7 +19,7 @@ const loadExpress = (route) => {
   app.use(
     morgan(config.logs.morganFormat, {
       stream: {
-        write: (message) => logger.info(message),
+        write: (message) => logger.http(message),
       },
     })
   );

@@ -17,11 +17,26 @@ module.exports = {
     level: process.env.LOG_LEVEL,
     morganFormat : process.env.MORGAN_FORMAT,
   },
+  cronjobs: {
+    collection: process.env.DB_COLLECTION,
+    pooltime: process.env.POOL_TIME,
+    concurrency: process.env.concurrency,
+  },
   token : {
     access_secret: process.env.ACCESS_TOKEN_SECRET,
     access_expired: process.env.ACCESS_TOKEN_EXPIRED,
     refresh_secret: process.env.REFRESH_TOKEN_SECRET,
     refresh_expired: process.env.REFRESH_TOKEN_EXPIRED,
+    email_secret: process.env.EMAIL_TOKEN_SECRET,
+    email_expired: process.env.EMAIL_TOKEN_EXPIRED,
+  },
+  email : {
+    user: process.env.EMAIL_USER,
+    password: process.env.EMAIL_PASSWORD,
+    template: {
+      userConfirmation: 'userConfirmation',
+      forgetPassword: 'forgetPassword',
+    }
   },
   api: {
     prefix: '/api',

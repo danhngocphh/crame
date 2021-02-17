@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
+
 const config = require('../../config');
 const { ActionResponse, APIError } = require('../../helpers');
-const { user: UserModel } = require('../../system/database/models');
-const { jwtService } = require('../../system/services');
+const { user: UserModel } = require('../../infrastructure/database/models');
+const logger = require('../../infrastructure/logger');
+const { jwtService, emailService } = require('../../infrastructure/services');
 
 const saltRounds = 10;
 
@@ -11,7 +13,9 @@ const AuthController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: userReq } = req;
-      const userFound = await UserModel.findOne({ email: userReq.email });
+      const userFound = await UserModel.findOne({ email: userReq.email })
+        .lean()
+        .exec();
       if (userFound == null)
         throw new APIError('User not found', config.httpStatus.NotFound, {
           email: `${userReq.email} not exist. Try another email`,
@@ -21,12 +25,29 @@ const AuthController = {
         userFound.password
       );
       if (!verifyPassword)
-        throw new APIError('Invalid password', config.httpStatus.NotFound, {
-          password: `${userReq.password} is invalid. Try another password`,
+        throw new APIError('Invalid password', config.httpStatus.BadRequest, {
+          password: `Password is invalid. Try another password`,
         });
-      const access_token = await jwtService.genAccessToken(userFound.id);
-      const refresh_token = await jwtService.genRefreshToken(userFound.id);
-      actionResponse.createdDataSuccess({ access_token, refresh_token });
+      if (!userFound.isConfirmed) {
+        logger.silly('The user is not confirmed');
+        throw new APIError('not-confirm', config.httpStatus.BadRequest, {
+          email: `${userReq.email} is not confirmed. Try another email`,
+        });
+      } else {
+        const [access_token, refresh_token] = await Promise.all([
+          jwtService.genAccessToken(userFound.id),
+          jwtService.genRefreshToken(userFound.id),
+        ]);
+        logger.debug(`All token of user ${userFound.email} is generated : %o`, {
+          access_token,
+          refresh_token,
+        });
+        actionResponse.createdDataSuccess({
+          access_token,
+          refresh_token,
+          isConfirmed: true,
+        });
+      }
     } catch (error) {
       next(error);
     }
@@ -36,18 +57,27 @@ const AuthController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: userReq } = req;
-      const hasedPassword = await bcrypt.hash(userReq.password, saltRounds);
+      const hashedPassword = await bcrypt.hash(userReq.password, saltRounds);
+      const userFound = await UserModel.findOne({ email: userReq.email });
+      if (userFound != null || userReq.email == config.email.user)
+        throw new APIError('User already exist', config.httpStatus.BadRequest, {
+          email: `${userReq.email} is existed. Try another email`,
+        });
       const userCreated = new UserModel({
         ...userReq,
-        password: hasedPassword,
-        isConfirmed: true,
+        password: hashedPassword,
+        isConfirmed: false,
       });
-      const access_token = await jwtService.genAccessToken(userCreated.id);
-      const refresh_token = await jwtService.genRefreshToken(userCreated.id);
-      await userCreated.save();
+      const [emailToken] = await Promise.all([
+        jwtService.genEmailToken(userCreated),
+        userCreated.save(),
+      ]);
+      const infoEmail = await emailService.sendMailConfirmUser({
+        email: userCreated.email,
+        emailToken,
+      });
       actionResponse.createdDataSuccess({
-        access_token,
-        refresh_token,
+        infoEmail,
         userId: userCreated.id,
       });
     } catch (error) {
@@ -68,21 +98,93 @@ const AuthController = {
   logout: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const {
-        currentUser: { id : currentId },
-      } = req;
       const { refreshToken } = req.body;
-      const { id } = await jwtService.verifyRefreshToken(refreshToken)
-      if(currentId !== id) throw new APIError('Invalid refreshtoken', config.httpStatus.BadRequest);
+      const { id } = await jwtService.verifyRefreshToken(refreshToken);
       await jwtService.removeRefreshToken(id, refreshToken);
       actionResponse.createdDataSuccess();
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
-  confirm: async (req, res, next) => {},
-  forgetPassword: async (req, res, next) => {},
-  refreshPassword: async (req, res, next) => {},
+  confirm: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { emailToken } = req.body;
+      const { id } = await jwtService.verifyEmailToken(emailToken);
+      const { password, ...result } = (
+        await UserModel.findByIdAndUpdate(id, {
+          isConfirmed: true,
+          new: true,
+        }).exec()
+      ).toObject();
+      actionResponse.createdDataSuccess({ ...result });
+    } catch (error) {
+      next(error);
+    }
+  },
+  resendConfirm: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { email } = req.body;
+      const userFound = await UserModel.findOne({ email });
+      if (userFound == null)
+        throw new APIError('User not found', config.httpStatus.NotFound, {
+          email: `${email} not exist. Try another email`,
+        });
+      if (userFound.isConfirmed)
+        throw new APIError(
+          `The ${email} is already confirm`,
+          config.httpStatus.BadRequest,
+          {
+            email: `${email} is already confirm`,
+          }
+        );
+      const emailToken = await jwtService.genEmailToken(userFound);
+      const infoEmail = await emailService.sendMailConfirmUser({
+        email,
+        emailToken,
+      });
+      actionResponse.createdDataSuccess({ ...infoEmail });
+    } catch (error) {
+      next(error);
+    }
+  },
+  forgetPassword: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { email } = req.body;
+      const userFound = await UserModel.findOne({ email });
+      if (userFound == null)
+        throw new APIError('User not found', config.httpStatus.NotFound, {
+          email: `${email} not exist. Try another email`,
+        });
+      const emailToken = await jwtService.genEmailToken(userFound);
+      const infoEmail = await emailService.sendMailForgetPassword({
+        email,
+        emailToken,
+      });
+      actionResponse.createdDataSuccess({ ...infoEmail });
+    } catch (error) {
+      next(error);
+    }
+  },
+  refreshPassword: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { body: userReq } = req;
+      const hashedPassword = await bcrypt.hash(userReq.password, saltRounds);
+      const { id } = await jwtService.verifyEmailToken(userReq.emailToken);
+      const { password, ...result } = (
+        await UserModel.findByIdAndUpdate(id, {
+          password: hashedPassword,
+          new: true,
+        }).exec()
+      ).toObject();
+      actionResponse.createdDataSuccess({ ...result });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = AuthController;

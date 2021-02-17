@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { role } = require('../enum');
 
 const user = new mongoose.Schema({
   name: {
@@ -15,10 +16,15 @@ const user = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: [role.admin, role.customer],
+    default: role.customer
+  },
   isConfirmed: {
     type: Boolean,
     default: false,
   }
 });
 
-module.exports = mongoose.model('user', user);
+module.exports = mongoose.model('users', user);

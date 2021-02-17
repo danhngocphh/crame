@@ -5,6 +5,9 @@ const UserController = {
     const actionResponse = new ActionResponse(res);
     return actionResponse.getDataSucces({ currentUser: req.currentUser });
   },
+  getAll: (req, res, next) => {
+    
+  }
 };
 
 module.exports = UserController;

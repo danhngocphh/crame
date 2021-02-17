@@ -1,10 +1,10 @@
 const { EventEmitter } = require('events');
-const logger = require('../system/logger');
+const logger = require('../infrastructure/logger');
 let eventEmitter;
 
 module.exports = {
   start: () => {
-    ventEmitter = new EventEmitter();
+    eventEmitter = new EventEmitter();
     logger.info('[Events] Load events successfully');
   },
   get: () => eventEmitter,

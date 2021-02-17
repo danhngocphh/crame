@@ -1,6 +1,7 @@
 const config = require('../../config');
-const { user: userModel } = require('../../system/database/models');
-const { jwtService } = require('../../system/services');
+const { APIError } = require('../../helpers');
+const { user: userModel } = require('../../infrastructure/database/models');
+const { jwtService } = require('../../infrastructure/services');
 
 const getTokenFromHeader = (req) => {
   if (
@@ -16,8 +17,8 @@ const isAuth = async (req, res, next) => {
   try {
     const token = getTokenFromHeader(req);
     const { id } = await jwtService.verifyAccessToken(token);
-    const userFound = await userModel.findById(id);
-    const currentUser = userFound.toObject();
+    const currentUser = await userModel.findById(id);
+    if(!currentUser.isConfirmed) next(new APIError("The user is not confirmed."), config.httpStatus.BadRequest);
     Reflect.deleteProperty(currentUser, 'password');
     req.currentUser = currentUser;
     next();
