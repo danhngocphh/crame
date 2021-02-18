@@ -13,7 +13,7 @@ route.post(
 
 route.post(
     '/apicategory',
-    // Middleware.isValidate(CrawlSchema.apiProductPOST),
+    Middleware.isValidate(CrawlSchema.apiCategoryPOST),
     CrawlController.callApiCategory
 );
 

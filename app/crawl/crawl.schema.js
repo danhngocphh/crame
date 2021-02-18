@@ -6,6 +6,9 @@ const CrawlSchema = {
         nameRootCategory: Joi.string().required(),
         categoryId: Joi.number().required(),
         limit: Joi.number().required(),
+    }),
+    apiCategoryPOST: Joi.object({
+        storeName: Joi.string().required()
     })
 };
 
