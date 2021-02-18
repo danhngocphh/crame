@@ -21,7 +21,7 @@ const CrawlController = {
           _products = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
       }
-      if (_products.length > 0) {
+      if (_products && _products.length > 0) {
         saveDB.product(_products);
         actionResponse.getDataCrawled(_products, dataReq.storeName, dataReq.categoryId);
       } else {
@@ -49,7 +49,7 @@ const CrawlController = {
           _category = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
       }
-      if (_category.length > 0) {
+      if (_category && _category.length > 0) {
         saveDB.category(dataReq.storeName, _category);
         actionResponse.getCategoryCrawled(_category, dataReq.storeName);
       } else {

@@ -25,8 +25,18 @@ const store = new mongoose.Schema({
         }
     }],
     url: {
-        type: String,
-        lowercase: true
+        type: Object,
+        required: true
+    },
+    headers: {
+        type: Object,
+        required: true
+
+    },
+    params: {
+        type: Object,
+        required: true
+
     },
     imgLogo: {
         type: String,

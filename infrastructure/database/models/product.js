@@ -1,36 +1,48 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const product = new mongoose.Schema({
-  storeid: {
+  remoteId: {
     type: String,
     required: true,
+    unique: true
   },
-  categoryid: {
-    type: String,
+  storeId: {
+    type: Schema.Types.ObjectId,
+    ref: 'stores',
     required: true,
   },
-  slug: {
-    type: String,
+  rootCategoryId: {
+    type: Schema.Types.ObjectId,
+    ref: 'rootcategories',
     required: true,
   },
   url: {
     type: String,
-    required: true,
+    required: true
+  },
+  image: {
+    type: String,
+    required: true
   },
   name: {
     type: String,
     required: true,
   },
+  updated: {
+    type: Date,
+    default: Date.now
+  },
   price: {
     type: Number,
     required: true,
   },
-  pricemin:  Number,
-  pricemax:  Number,
+  priceMin: Number,
+  priceMax: Number,
   brand: String,
   type: String,
-  productcompare: String,
-  active: {
+  productCompare: String,
+  isActive: {
     type: Boolean,
     default: true
   }

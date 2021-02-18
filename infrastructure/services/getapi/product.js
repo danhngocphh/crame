@@ -6,17 +6,19 @@ const ObjectID = require('mongodb').ObjectID;
 const { store: StoreModel, rootcategory: rootCategoryModel } = require('../../database/models')
 
 
-exports.Shopee = (storename, nameRootCategory, categoryid, limit) => {
+exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
-            const store = await StoreModel.findOne({ name: storename });
+            const store = await StoreModel.findOne({ name: storeName });
+            const params =  store.params;
+            params.match_id = categoryId;
+            params.limit = limit;
             const data = await axios.get(
-                store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit +  store.dataCallAPI.urlFooter,
+                store.url.product,
                 {
-                    headers: {
-                        'Referer': store.url
-                    }
+                    headers: store.headers,
+                    params: params
                 }
             );
             const _products = _.map(data.data.items, o => ({
@@ -27,8 +29,8 @@ exports.Shopee = (storename, nameRootCategory, categoryid, limit) => {
                 image: store.dataCallAPI.imageProduct + o.image,
                 name: o.name,
                 price: o.price,
-                pricemin: o.price_min,
-                pricemax: o.price_max,
+                priceMin: o.price_min,
+                priceMax: o.price_max,
                 brand: o.brand,
                 type: o.item_type
             }))
@@ -39,13 +41,13 @@ exports.Shopee = (storename, nameRootCategory, categoryid, limit) => {
     })
 };
 
-exports.Sendo = (storename, nameRootCategory, categoryid, limit) => {
+exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
-            const store = await StoreModel.findOne({ name: storename });
+            const store = await StoreModel.findOne({ name: storeName });
             const data = await axios.get(
-                store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit,
+                store.dataCallAPI.urlHeader + categoryId + store.dataCallAPI.urlMiddle + limit,
                 {
                   headers: {
                     'Referer': store.url
@@ -72,13 +74,13 @@ exports.Sendo = (storename, nameRootCategory, categoryid, limit) => {
     })
 };
 
-exports.Tiki = (storename, nameRootCategory, categoryid, limit) => {
+exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
-            const store = await StoreModel.findOne({ name: storename });
+            const store = await StoreModel.findOne({ name: storeName });
             const data = await axios.get(
-                store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit,
+                store.dataCallAPI.urlHeader + categoryId + store.dataCallAPI.urlMiddle + limit,
                 {
                     headers: {
                         'Referer': store.url
