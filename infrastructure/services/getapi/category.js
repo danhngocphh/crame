@@ -6,15 +6,15 @@ const ObjectID = require('mongodb').ObjectID;
 const { store: StoreModel } = require('../../database/models')
 
 
-exports.Shopee = (storename) => {
+exports.Shopee = (storeName) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storename });
+            const store = await StoreModel.findOne({ name: storeName });
             const data = await axios.get(
                 "https://shopee.vn/api/v2/category_list/get?match",
                 {
                     headers: {
-                        'Referer': store.url
+                        'Referer': "https://shopee.vn"
                     }
                 }
             );
@@ -29,48 +29,48 @@ exports.Shopee = (storename) => {
     })
 };
 
-exports.Sendo = (storename, nameRootCategory, categoryid, limit) => {
-    return new Promise( async (resolve, reject) => {
-        try {
-            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
-            const store = await StoreModel.findOne({ name: storename });
-            const data = await axios.get(
-                store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit,
-                {
-                  headers: {
-                    'Referer': store.url
-                  }
-                }
-              );
-              const _products =  _.map(data.data.data, o => ({
-                remoteId: o.id,
-                storeId: new ObjectID(store.id),
-                rootCategoryId: new ObjectID(rootCategory.id),
-                url: store.dataCallAPI.urlProduct + o.category_path,
-                image: o.image,
-                name: o.name,
-                price: o.sale_price_min,
-                priceMin: o.sale_price_min,
-                priceMax: o.sale_price_max,
-                brand: "...",
-                type: o.product_type.toString()
-              }))
-            resolve(_products);
-        } catch (error) {
-            reject(new APIError(error.message, config.httpStatus.BadRequest));
-        }
-    })
-};
+// exports.Sendo = (storename, nameRootCategory, categoryid, limit) => {
+//     return new Promise( async (resolve, reject) => {
+//         try {
+//             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+//             const store = await StoreModel.findOne({ name: storename });
+//             const data = await axios.get(
+//                 store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit,
+//                 {
+//                   headers: {
+//                     'Referer': store.url
+//                   }
+//                 }
+//               );
+//               const _products =  _.map(data.data.data, o => ({
+//                 remoteId: o.id,
+//                 storeId: new ObjectID(store.id),
+//                 rootCategoryId: new ObjectID(rootCategory.id),
+//                 url: store.dataCallAPI.urlProduct + o.category_path,
+//                 image: o.image,
+//                 name: o.name,
+//                 price: o.sale_price_min,
+//                 priceMin: o.sale_price_min,
+//                 priceMax: o.sale_price_max,
+//                 brand: "...",
+//                 type: o.product_type.toString()
+//               }))
+//             resolve(_products);
+//         } catch (error) {
+//             reject(new APIError(error.message, config.httpStatus.BadRequest));
+//         }
+//     })
+// };
 
-exports.Tiki =  (storename) => {
+exports.Tiki =  (storeName) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storename });
+            const store = await StoreModel.findOne({ name: storeName });
             const data = await axios.get(
                 "https://tiki.vn/api/shopping/v2/mega_menu",
                 {
                     headers: {
-                        'Referer': store.url
+                        'Referer': "https://tiki.vn/"
                     }
                 }
             );

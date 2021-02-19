@@ -79,12 +79,14 @@ exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
         try {
             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
             const store = await StoreModel.findOne({ name: storeName });
+            const params =  store.params;
+            params.category = categoryId;
+            params.limit = limit;
             const data = await axios.get(
-                store.dataCallAPI.urlHeader + categoryId + store.dataCallAPI.urlMiddle + limit,
+                store.url.product,
                 {
-                    headers: {
-                        'Referer': store.url
-                    }
+                    headers: store.headers,
+                    params: params
                 }
             );
             const _products = _.map(data.data.data, o => ({
