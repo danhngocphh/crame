@@ -60,6 +60,34 @@ const CrawlController = {
     } catch (error) {
       console.log(error);
     }
+  },
+  crawlProduct: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { body: dataReq } = req;
+      let _products;
+      switch (dataReq.storeName) {
+        case "shopee":
+          _products = await getProductAPI.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          break;
+        case "tiki":
+          _products = await getProductAPI.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          break;
+        case "sendo":
+          _products = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          break;
+      }
+      if (_products && _products.length > 0) {
+        saveDB.product(_products);
+        actionResponse.getDataCrawled(_products, dataReq.storeName, dataReq.categoryId);
+      } else {
+        throw new APIError('Cant get product', config.httpStatus.BadRequest, {
+          data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 
