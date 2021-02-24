@@ -21,7 +21,7 @@ exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
                     params: params
                 }
             );
-            const _products = _.map(data.data.items, o => ({
+            const products = _.map(data.data.items, o => ({
                 remoteId: o.itemid,
                 storeId: new ObjectID(store.id),
                 rootCategoryId: new ObjectID(rootCategory.id),
@@ -34,7 +34,7 @@ exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
                 brand: o.brand,
                 type: o.item_type
             }))
-            resolve(_products);
+            resolve(products);
         } catch (error) {
             reject(new APIError(error.message, config.httpStatus.BadRequest));
         }
@@ -54,7 +54,7 @@ exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
                   }
                 }
               );
-              const _products =  _.map(data.data.data, o => ({
+              const products =  _.map(data.data.data, o => ({
                 remoteId: o.id,
                 storeId: new ObjectID(store.id),
                 rootCategoryId: new ObjectID(rootCategory.id),
@@ -67,7 +67,7 @@ exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
                 brand: "...",
                 type: o.product_type.toString()
               }))
-            resolve(_products);
+            resolve(products);
         } catch (error) {
             reject(new APIError(error.message, config.httpStatus.BadRequest));
         }
@@ -89,7 +89,7 @@ exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
                     params: params
                 }
             );
-            const _products = _.map(data.data.data, o => ({
+            const products = _.map(data.data.data, o => ({
                 remoteId: o.id,
                 storeId: new ObjectID(store.id),
                 rootCategoryId: new ObjectID(rootCategory.id),
@@ -102,7 +102,7 @@ exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
                 brand: o.brand_name,
                 type: o.type
             }))
-            resolve(_products);
+            resolve(products);
         } catch (error) {
             reject(new APIError(error.message, config.httpStatus.BadRequest));
         }

@@ -12,18 +12,18 @@ class ActionResponse {
     });
   }
 
-  getDataCrawled(data, _shopname, _categoryid) {
+  getDataCrawled(data, shopName, categoryId) {
     return this.res.status(200).json({
       success: true,
-      msg: "Crawled: " + _shopname +"_" +_categoryid,
+      msg: "Crawled: " + shopName +"_" +categoryId,
       data,
     });
   }
 
-  getCategoryCrawled(data, _shopname) {
+  getCategoryCrawled(data, shopName) {
     return this.res.status(200).json({
       success: true,
-      msg: "Crawled List Category : " + _shopname,
+      msg: "Crawled List Category : " + shopName,
       data,
     });
   }

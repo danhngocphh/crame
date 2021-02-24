@@ -9,21 +9,21 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      let _products;
+      let products;
       switch (dataReq.storeName) {
         case "shopee":
-          _products = await getProductAPI.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
         case "tiki":
-          _products = await getProductAPI.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
         case "sendo":
-          _products = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
       }
-      if (_products && _products.length > 0) {
-        saveDB.product(_products);
-        actionResponse.getDataCrawled(_products, dataReq.storeName, dataReq.categoryId);
+      if (products && products.length > 0) {
+        saveDB.product(products);
+        actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
           data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
@@ -37,21 +37,21 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      let _category;
+      let category;
       switch (dataReq.storeName) {
         case "shopee":
-          _category = await getCategoryAPI.Shopee(dataReq.storeName);
+          category = await getCategoryAPI.Shopee(dataReq.storeName);
           break;
         case "tiki":
-          _category = await getCategoryAPI.Tiki(dataReq.storeName);
+          category = await getCategoryAPI.Tiki(dataReq.storeName);
           break;
         case "sendo":
-          _category = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          category = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
       }
-      if (_category && _category.length > 0) {
-        saveDB.category(dataReq.storeName, _category);
-        actionResponse.getCategoryCrawled(_category, dataReq.storeName);
+      if (category && category.length > 0) {
+        saveDB.category(dataReq.storeName, category);
+        actionResponse.getCategoryCrawled(category, dataReq.storeName);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
           data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
@@ -65,21 +65,21 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      let _products;
+      let products;
       switch (dataReq.storeName) {
         case "shopee":
-          _products = await getProductAPI.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
         case "tiki":
-          _products = await getProductAPI.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
         case "sendo":
-          _products = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
       }
-      if (_products && _products.length > 0) {
-        saveDB.product(_products);
-        actionResponse.getDataCrawled(_products, dataReq.storeName, dataReq.categoryId);
+      if (products && products.length > 0) {
+        saveDB.product(products);
+        actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
           data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,

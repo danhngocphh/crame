@@ -18,11 +18,11 @@ exports.Shopee = (storeName) => {
                     }
                 }
             );
-            const _category = _.map(data.data.data.category_list, o => ({
+            const category = _.map(data.data.data.category_list, o => ({
                 id: o.catid,
                 name: o.display_name
             }))
-            resolve(_category);
+            resolve(category);
         } catch (error) {
             reject(new APIError(error.message, config.httpStatus.BadRequest));
         }
@@ -74,11 +74,11 @@ exports.Tiki =  (storeName) => {
                     }
                 }
             );
-            const _category = _.map(data.data.data, o => ({
+            const category = _.map(data.data.data, o => ({
                 id: o.item.id,
                 name: o.item.title
             }))
-            resolve(_category);
+            resolve(category);
         } catch (error) {
             reject(new APIError(error.message, config.httpStatus.BadRequest));
         }
