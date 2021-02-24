@@ -6,23 +6,33 @@ const ObjectID = require('mongodb').ObjectID;
 const { store: StoreModel, rootcategory: rootCategoryModel } = require('../../database/models')
 
 
-exports.getData = async () => {
-    const url = 'https://shopee.vn/Th%E1%BB%9Di-Trang-Nam-cat.78';
-    const pageContent = await getPageContent(url);
-    const $ = await cheerio.load(pageContent);
-    const totalItem = $('.shopee-search-item-result__item');
-    const result = totalItem
-      .map((index, value) => {
-        const price = $(value).find('._1xk7ak').text();
-        const name = $(value).find('._1NoI8_.A6gE1J.1co5xN').text();
-        return {
-          index: index + 1,
-          name,
-          price,
-        };
-      })
-      .get(5);  
-      console.log(result);
+exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
+  return new Promise( async (resolve, reject) => {
+    try {
+      const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+      const store = await StoreModel.findOne({ name: storeName });
+      const url = 'https://shopee.vn/Th%E1%BB%9Di-Trang-Nam-cat.78';
+      const pageContent = await getPageContent(url);
+      const $ = await cheerio.load(pageContent);
+      const totalItem = $('.shopee-search-item-result__item');
+      const products =  _.map(totalItem, (index, value) => ({
+        remoteId: "Dang cap nhat",
+        storeId: new ObjectID(store.id),
+        rootCategoryId: new ObjectID(rootCategory.id),
+        url: $(value).attr('href').text(),  
+        image: $(value).find('.customized-overlay-image').text(),
+        name: $(value).find('._1co5xN').text(),
+        price: $(value).find('._1xk7ak').text(),
+        priceMin:  $(value).find('._1xk7ak').text(),
+        priceMax:  $(value).find('._1xk7ak').text(),
+        brand: "...",
+        type: "..."
+      }))
+        resolve(products);
+    } catch (error) {
+        reject(new APIError(error.message, config.httpStatus.BadRequest));
+    }
+})
 };
 
 exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {

@@ -1,5 +1,5 @@
 const { ActionResponse, APIError } = require('../../helpers');
-const { getProductAPI, getCategoryAPI, saveDB } = require('../../infrastructure/services');
+const { crawlProduct, getProductAPI, getCategoryAPI, saveDB } = require('../../infrastructure/services');
 const _ = require('lodash');
 const config = require('../../config');
 
@@ -68,7 +68,7 @@ const CrawlController = {
       let products;
       switch (dataReq.storeName) {
         case "shopee":
-          products = await getProductAPI.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await crawlProduct.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
           break;
         case "tiki":
           products = await getProductAPI.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
