@@ -36,71 +36,61 @@ exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
 };
 
 exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
-    return new Promise( async (resolve, reject) => {
-        try {
-            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
-            const store = await StoreModel.findOne({ name: storeName });
-            const data = await axios.get(
-                store.dataCallAPI.urlHeader + categoryId + store.dataCallAPI.urlMiddle + limit,
-                {
-                  headers: {
-                    'Referer': store.url
-                  }
-                }
-              );
-              const products =  _.map(data.data.data, o => ({
-                remoteId: o.id,
-                storeId: new ObjectID(store.id),
-                rootCategoryId: new ObjectID(rootCategory.id),
-                url: store.dataCallAPI.urlProduct + o.category_path,
-                image: o.image,
-                name: o.name,
-                price: o.sale_price_min,
-                priceMin: o.sale_price_min,
-                priceMax: o.sale_price_max,
-                brand: "...",
-                type: o.product_type.toString()
-              }))
-            resolve(products);
-        } catch (error) {
-            reject(new APIError(error.message, config.httpStatus.BadRequest));
-        }
-    })
+  return new Promise( async (resolve, reject) => {
+    try {
+      const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+      const store = await StoreModel.findOne({ name: storeName });
+      const url = 'https://www.sendo.vn/thoi-trang-nam/';
+      const pageContent = await getPageContent(url);
+      const $ = await cheerio.load(pageContent);  
+      const totalItem = $('.card_3Vc8');
+      const products =  _.map(totalItem, (index, value) => ({
+        remoteId: "Dang cap nhat",
+        storeId: new ObjectID(store.id),
+        rootCategoryId: new ObjectID(rootCategory.id),
+        url: $(value).attr('href').text(),  
+        image: $(value).find('.image_3mnm').find('img').attr('src');,
+        name: $(value).find('.truncateMedium_Tofh').text(),
+        price: $(value).find('.currentPrice_2hr9').text(),
+        priceMin:  $(value).find('.currentPrice_2hr9').text(),
+        priceMax:  $(value).find('.currentPrice_2hr9').text(),
+        brand: "...",
+        type: "..."
+      }))
+        resolve(products);
+    } catch (error) {
+        reject(new APIError(error.message, config.httpStatus.BadRequest));
+    }
+})
 };
 
 exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
-    return new Promise( async (resolve, reject) => {
-        try {
-            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
-            const store = await StoreModel.findOne({ name: storeName });
-            const params =  store.params;
-            params.category = categoryId;
-            params.limit = limit;
-            const data = await axios.get(
-                store.url.product,
-                {
-                    headers: store.headers,
-                    params: params
-                }
-            );
-            const products = _.map(data.data.data, o => ({
-                remoteId: o.id,
-                storeId: new ObjectID(store.id),
-                rootCategoryId: new ObjectID(rootCategory.id),
-                url: store.dataCallAPI.urlProduct + o.id,
-                image: o.thumbnail_url,
-                name: o.name,
-                price: o.price,
-                priceMin: o.price,
-                priceMax: o.price,
-                brand: o.brand_name,
-                type: o.type
-            }))
-            resolve(products);
-        } catch (error) {
-            reject(new APIError(error.message, config.httpStatus.BadRequest));
-        }
-    })
+  return new Promise( async (resolve, reject) => {
+    try {
+      const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+      const store = await StoreModel.findOne({ name: storeName });
+      const url = 'https://tiki.vn/thoi-trang-nam/c915?src=c.915.hamburger_menu_fly_out_banner';
+      const pageContent = await getPageContent(url);
+      const $ = await cheerio.load(pageContent);
+      const totalItem = $('.style__StyledItem-sc-18svp8n-0');
+      const products =  _.map(totalItem, (index, value) => ({
+        remoteId: "Dang cap nhat",
+        storeId: new ObjectID(store.id),
+        rootCategoryId: new ObjectID(rootCategory.id),
+        url: $(value).attr('href').text(),  
+        image: $(value).find('.thumbnail').find('img').attr('src');,
+        name: $(value).find('.name').text(),
+        price: $(value).find('.price-discount__price').text(),
+        priceMin:  $(value).find('.price-discount__price').text(),
+        priceMax:  $(value).find('.price-discount__price').text(),
+        brand: "...",
+        type: "..."
+      }))
+        resolve(products);
+    } catch (error) {
+        reject(new APIError(error.message, config.httpStatus.BadRequest));
+    }
+})
 };
 
 const getPageContent = async (url) => {
