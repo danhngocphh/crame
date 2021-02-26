@@ -3,6 +3,8 @@ const { APIError } = require('../../../helpers');
 const config = require('../../../config');
 const _ = require('lodash');
 const ObjectID = require('mongodb').ObjectID;
+const puppeteer = require("puppeteer");
+const cheerio = require("cheerio");
 const { store: StoreModel, rootcategory: rootCategoryModel } = require('../../database/models')
 
 
@@ -49,7 +51,7 @@ exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: $(value).attr('href').text(),  
-        image: $(value).find('.image_3mnm').find('img').attr('src');,
+        image: $(value).find('.image_3mnm').find('img').attr('src'),
         name: $(value).find('.truncateMedium_Tofh').text(),
         price: $(value).find('.currentPrice_2hr9').text(),
         priceMin:  $(value).find('.currentPrice_2hr9').text(),
@@ -78,7 +80,7 @@ exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: $(value).attr('href').text(),  
-        image: $(value).find('.thumbnail').find('img').attr('src');,
+        image: $(value).find('.thumbnail').find('img').attr('src'),
         name: $(value).find('.name').text(),
         price: $(value).find('.price-discount__price').text(),
         priceMin:  $(value).find('.price-discount__price').text(),
