@@ -13,14 +13,20 @@ route.post(
 
 route.post(
     '/apicategory',
-    Middleware.isValidate(CrawlSchema.apiCategoryPOST),
+    Middleware.isValidate(CrawlSchema.CategoryPOST),
     CrawlController.callApiCategory
 );
 
 route.post(
     '/crawlproduct',
-    Middleware.isValidate(CrawlSchema.apiProductPOST),
+    Middleware.isValidate(CrawlSchema.crawlProductPOST),
     CrawlController.crawlProduct
+);
+
+route.post(
+    '/crawlcategory',
+    Middleware.isValidate(CrawlSchema.CategoryPOST),
+    CrawlController.crawlCategory
 );
 
 

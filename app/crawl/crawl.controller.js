@@ -1,5 +1,5 @@
 const { ActionResponse, APIError } = require('../../helpers');
-const { crawlProduct, getProductAPI, getCategoryAPI, saveDB } = require('../../infrastructure/services');
+const { crawlProduct, crawlCategory, getProductAPI, getCategoryAPI, saveDB } = require('../../infrastructure/services');
 const _ = require('lodash');
 const config = require('../../config');
 
@@ -33,7 +33,7 @@ const CrawlController = {
       console.log(error);
     }
   },
-  callApiCategory:  async (req, res, next) => {
+  callApiCategory: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
@@ -68,18 +68,52 @@ const CrawlController = {
       let products;
       switch (dataReq.storeName) {
         case "shopee":
-          products = await crawlProduct.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await crawlProduct.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
           break;
         case "tiki":
-          products = await crawlProduct.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await crawlProduct.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
           break;
         case "sendo":
-          products = await crawlProduct.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await crawlProduct.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
+          break;
+        case "lazada":
+          products = await crawlProduct.Lazada(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
           break;
       }
       if (products && products.length > 0) {
         saveDB.product(products);
         actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
+      } else {
+        throw new APIError('Cant get product', config.httpStatus.BadRequest, {
+          data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  crawlCategory: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { body: dataReq } = req;
+      let category;
+      switch (dataReq.storeName) {
+        case "shopee":
+          category = await crawlCategory.Shopee();
+          break;
+        case "tiki":
+          category = await crawlCategory.Tiki();
+          break;
+        case "sendo":
+          category = await crawlCategory.Sendo();
+          break;
+        case "lazada":
+          category = await crawlCategory.Lazada();
+          break;
+      }
+      if (category && category.length > 0) {
+        saveDB.category(dataReq.storeName, category);
+        actionResponse.getCategoryCrawled(category, dataReq.storeName);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
           data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,

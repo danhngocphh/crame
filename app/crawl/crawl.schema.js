@@ -7,7 +7,12 @@ const CrawlSchema = {
         categoryId: Joi.number().required(),
         limit: Joi.number().required(),
     }),
-    apiCategoryPOST: Joi.object({
+    crawlProductPOST: Joi.object({
+        storeName: Joi.string().required(),
+        nameRootCategory: Joi.string().required(),
+        url: Joi.string().required()
+    }),
+    CategoryPOST: Joi.object({
         storeName: Joi.string().required()
     })
 };

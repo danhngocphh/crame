@@ -11,13 +11,11 @@ const store = new mongoose.Schema({
     category: [{
         id: {
             type: Number,
-            required: true,
-            unique: true
+            required: true
         },
         name: {
             type: String,
-            required: true,
-            unique: true
+            required: true
         },
         isActive: {
             type: Boolean,
