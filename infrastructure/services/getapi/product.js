@@ -49,9 +49,7 @@ exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
             const data = await axios.get(
                 store.dataCallAPI.urlHeader + categoryId + store.dataCallAPI.urlMiddle + limit,
                 {
-                  headers: {
-                    'Referer': store.url
-                  }
+                  headers:store.headers
                 }
               );
               const products =  _.map(data.data.data, o => ({

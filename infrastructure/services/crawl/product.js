@@ -18,12 +18,12 @@ exports.Shopee = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $('.shopee-search-item-result__item');
       const products = totalItem.map((index, value) => ({
-        remoteId: $(value).find('a').attr('href') || "Đang cập nhật",
+        remoteId: $(value).find('a').attr('href') || config.dataNull,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
-        url:  store.headers.Referer + $(value).find('a').attr('href') || "Đang cập nhật",
-        image: $(value).find('.customized-overlay-image').find('img').attr('src') || "Đang cập nhật",
-        name: $(value).find('._1co5xN').text() || "Đang cập nhật",
+        url:  store.headers.Referer + $(value).find('a').attr('href') || config.dataNull,
+        image: $(value).find('.customized-overlay-image').find('img').attr('src') || config.dataNull,
+        name: $(value).find('._1co5xN').text() || config.dataNull,
         price: Number($(value).find('._1xk7ak').text()) || 0,
         priceMin: Number($(value).find('._1xk7ak').text()) || 0,
         priceMax: Number($(value).find('._1xk7ak').text()) || 0,
@@ -50,12 +50,12 @@ exports.Sendo = (storeName, nameRootCategory, url) => {
         remoteId: $(value).attr('href'),
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
-        url: store.url + $(value).attr('href') || "Đang cập nhật",
-        image: $(value).find('.image_3mnm').find('img').attr('src')  || "Đang cập nhật",
-        name: $(value).find('.truncateMedium_Tofh').text() || "Đang cập nhật",
-        price: parseInt($(value).find('.currentPrice_2hr9').text()) || "Đang cập nhật",
-        priceMin: parseInt($(value).find('.currentPrice_2hr9').text()) || "Đang cập nhật",
-        priceMax: parseInt($(value).find('.currentPrice_2hr9').text()) || "Đang cập nhật",
+        url: store.url + $(value).attr('href') || config.dataNull,
+        image: $(value).find('.image_3mnm').find('img').attr('src')  || config.dataNull,
+        name: $(value).find('.truncateMedium_Tofh').text() || config.dataNull,
+        price: parseInt($(value).find('.currentPrice_2hr9').text()) || config.dataNull,
+        priceMin: parseInt($(value).find('.currentPrice_2hr9').text()) || config.dataNull,
+        priceMax: parseInt($(value).find('.currentPrice_2hr9').text()) || config.dataNull,
         brand: "...",
         type: "..."
       }))
@@ -76,15 +76,15 @@ exports.Tiki = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $('.product-item');
       const products = totalItem.map((index, value) => ({
-        remoteId: $(value).attr('href') || "Đang cập nhật",
+        remoteId: $(value).attr('href') || config.dataNull,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
-        url: store.headers.Referer + $(value).attr('href') || "Đang cập nhật",
-        image: $(value).find('.thumbnail').find('img').attr('src') || "Đang cập nhật",
-        name: $(value).find('.name').text() || "Đang cập nhật",
-        price: parseInt($(value).find('.price-discount__price').text()) || "Đang cập nhật",
-        priceMin: parseInt($(value).find('.price-discount__price').text()) || "Đang cập nhật",
-        priceMax: parseInt($(value).find('.price-discount__price').text()) || "Đang cập nhật",
+        url: store.headers.Referer + $(value).attr('href') || config.dataNull,
+        image: $(value).find('.thumbnail').find('img').attr('src') || config.dataNull,
+        name: $(value).find('.name').text() || config.dataNull,
+        price: parseInt($(value).find('.price-discount__price').text()) || config.dataNull,
+        priceMin: parseInt($(value).find('.price-discount__price').text()) || config.dataNull,
+        priceMax: parseInt($(value).find('.price-discount__price').text()) || config.dataNull,
         brand: "...",
         type: "..."
       }))
@@ -105,15 +105,15 @@ exports.Lazada = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $('.c2prKC');
       const products = totalItem.map((index, value) => ({
-        remoteId: $(value).attr('href') || "Đang cập nhật",
+        remoteId: $(value).attr('href') || config.dataNull,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
-        url: store.headers.Referer + $(value).attr('href') || "Đang cập nhật",
-        image: $(value).find('.cRjKsc').find('img').attr('src') || "Đang cập nhật",
-        name: $(value).find('.c16H9d').text() || "Đang cập nhật",
-        price: parseInt($(value).find('.c3gUW0').text()) || "Đang cập nhật",
-        priceMin: parseInt($(value).find('.c3gUW0').text()) || "Đang cập nhật",
-        priceMax: parseInt($(value).find('.c3gUW0').text()) || "Đang cập nhật",
+        url: store.headers.Referer + $(value).attr('href') || config.dataNull,
+        image: $(value).find('.cRjKsc').find('img').attr('src') || config.dataNull,
+        name: $(value).find('.c16H9d').text() || config.dataNull,
+        price: parseInt($(value).find('.c3gUW0').text()) || config.dataNull,
+        priceMin: parseInt($(value).find('.c3gUW0').text()) || config.dataNull,
+        priceMax: parseInt($(value).find('.c3gUW0').text()) || config.dataNull,
         brand: "...",
         type: "..."
       }))

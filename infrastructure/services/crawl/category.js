@@ -12,13 +12,13 @@ exports.Shopee = (storeName) => {
     return new Promise(async (resolve, reject) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
-            const url = 'https://shopee.vn/';
+            const url = store.dataCrawlCategory.url;
             const pageContent = await getPageContent(url);
             const $ = await cheerio.load(pageContent);
-            const totalCategory = $('.home-category-list__category-grid');
+            const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find('._1NLLsA').text()  || "Đang cập nhật"
+                name: $(value).find(store.dataCrawlCategory.name).text()  || config.dataNull
             }))
             resolve(category.get());
         } catch (error) {
@@ -31,13 +31,13 @@ exports.Sendo = (storeName) => {
     return new Promise(async (resolve, reject) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
-            const url = 'https://www.sendo.vn/sitemap';
+            const url = store.dataCrawlCategory.url;
             const pageContent = await getPageContent(url);
             const $ = await cheerio.load(pageContent);
-            const totalCategory = $('.item_3GwX');
+            const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find('.title_140g').text()  || "Đang cập nhật"
+                name: $(value).find(store.dataCrawlCategory.name).text()  || config.dataNull
             }))
             resolve(category.get());
         } catch (error) {
@@ -50,13 +50,13 @@ exports.Tiki = (storeName) => {
     return new Promise(async (resolve, reject) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
-            const url = 'https://tiki.vn/categoty';
+            const url = store.dataCrawlCategory.url;
             const pageContent = await getPageContent(url);
             const $ = await cheerio.load(pageContent);
-            const totalCategory = $('.error404-category-item');
+            const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find('.error404-category-item-name').text().trim()  || "Đang cập nhật"
+                name: $(value).find(store.dataCrawlCategory.name).text().trim()  || config.dataNull
             }))
             resolve(category.get());
         } catch (error) {
@@ -69,13 +69,13 @@ exports.Lazada = (storeName) => {
     return new Promise(async (resolve, reject) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
-            const url = 'https://lazada.vn';
+            const url = store.dataCrawlCategory.url;
             const pageContent = await getPageContent(url);
             const $ = await cheerio.load(pageContent);
-            const totalCategory = $('.card-categories-li-content');
+            const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find('.card-categories-name').text().trim()  || "Đang cập nhật"
+                name: $(value).find(store.dataCrawlCategory.name).text().trim()  || config.dataNull
             }))
             resolve(category.get());
         } catch (error) {

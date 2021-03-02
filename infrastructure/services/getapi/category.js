@@ -11,11 +11,9 @@ exports.Shopee = (storeName) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
             const data = await axios.get(
-                "https://shopee.vn/api/v2/category_list/get?match",
+                store.url.category,
                 {
-                    headers: {
-                        'Referer': "https://shopee.vn"
-                    }
+                    headers: store.headers
                 }
             );
             const category = _.map(data.data.data.category_list, o => ({
@@ -67,11 +65,9 @@ exports.Tiki =  (storeName) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
             const data = await axios.get(
-                "https://tiki.vn/api/shopping/v2/mega_menu",
+                store.url.category,
                 {
-                    headers: {
-                        'Referer': "https://tiki.vn/"
-                    }
+                    headers: store.headers
                 }
             );
             const category = _.map(data.data.data, o => ({

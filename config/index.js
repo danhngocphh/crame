@@ -51,5 +51,6 @@ module.exports = {
     Unauthorized: 401,
     NotFound: 404,
     ServerError: 500,
-  }
+  },
+  dataNull: process.env.DATA_NULL
 };
