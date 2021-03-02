@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { regex } = require('../../../config');
 const { role } = require('../enum');
 
 const user = new mongoose.Schema({
@@ -12,6 +13,18 @@ const user = new mongoose.Schema({
     lowercase: true,
     unique: true,
   },
+  phoneNumber: {
+    type: String,
+    validate: {
+      validator: function(v) {
+        return regex.phoneNumber.test(v);
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    },
+  },
+  avatarUrl : String,
+  birthday: Date,
+  address: String,
   password: {
     type: String,
     required: true,

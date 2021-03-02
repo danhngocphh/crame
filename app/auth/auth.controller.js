@@ -13,9 +13,7 @@ const AuthController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: userReq } = req;
-      const userFound = await UserModel.findOne({ email: userReq.email })
-        .lean()
-        .exec();
+      const userFound = await UserModel.findOne({ email: userReq.email });
       if (userFound == null)
         throw new APIError('User not found', config.httpStatus.NotFound, {
           email: `${userReq.email} not exist. Try another email`,
@@ -29,9 +27,8 @@ const AuthController = {
           password: `Password is invalid. Try another password`,
         });
       if (!userFound.isConfirmed) {
-        logger.silly('The user is not confirmed');
         throw new APIError('not-confirm', config.httpStatus.BadRequest, {
-          email: `${userReq.email} is not confirmed. Try another email`,
+          email: `${userReq.email} chưa được kích hoạt. Vui lòng kích hoạt tài khoản`,
         });
       } else {
         const [access_token, refresh_token] = await Promise.all([
@@ -72,12 +69,12 @@ const AuthController = {
         jwtService.genEmailToken(userCreated),
         userCreated.save(),
       ]);
-      const infoEmail = await emailService.sendMailConfirmUser({
+      await emailService.sendMailConfirmUser({
         email: userCreated.email,
         emailToken,
       });
       actionResponse.createdDataSuccess({
-        infoEmail,
+        emailToken,
         userId: userCreated.id,
       });
     } catch (error) {
@@ -100,8 +97,20 @@ const AuthController = {
       const actionResponse = new ActionResponse(res);
       const { refreshToken } = req.body;
       const { id } = await jwtService.verifyRefreshToken(refreshToken);
+      logger.debug(`User ${id} logout`);
       await jwtService.removeRefreshToken(id, refreshToken);
       actionResponse.createdDataSuccess();
+    } catch (error) {
+      next(error);
+    }
+  },
+  checkValidEmailToken: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { emailToken } = req.body;
+      const { id } = await jwtService.verifyEmailToken(emailToken);
+      const { email } = await UserModel.findById(id);
+      actionResponse.createdDataSuccess({ email });
     } catch (error) {
       next(error);
     }
@@ -112,10 +121,13 @@ const AuthController = {
       const { emailToken } = req.body;
       const { id } = await jwtService.verifyEmailToken(emailToken);
       const { password, ...result } = (
-        await UserModel.findByIdAndUpdate(id, {
-          isConfirmed: true,
-          new: true,
-        }).exec()
+        await UserModel.findByIdAndUpdate(
+          id,
+          {
+            isConfirmed: true,
+          },
+          { new: true }
+        ).exec()
       ).toObject();
       actionResponse.createdDataSuccess({ ...result });
     } catch (error) {
@@ -140,11 +152,13 @@ const AuthController = {
           }
         );
       const emailToken = await jwtService.genEmailToken(userFound);
-      const infoEmail = await emailService.sendMailConfirmUser({
+      await emailService.sendMailConfirmUser({
         email,
         emailToken,
       });
-      actionResponse.createdDataSuccess({ ...infoEmail });
+      actionResponse.createdDataSuccess({
+        message: 'Email đã được gửi thành công bạn hãy kiểm tra email',
+      });
     } catch (error) {
       next(error);
     }
@@ -159,11 +173,13 @@ const AuthController = {
           email: `${email} not exist. Try another email`,
         });
       const emailToken = await jwtService.genEmailToken(userFound);
-      const infoEmail = await emailService.sendMailForgetPassword({
+      await emailService.sendMailForgetPassword({
         email,
         emailToken,
       });
-      actionResponse.createdDataSuccess({ ...infoEmail });
+      actionResponse.createdDataSuccess({
+        message: 'Email đã được gửi thành công bạn hãy kiểm tra email',
+      });
     } catch (error) {
       next(error);
     }
@@ -175,10 +191,13 @@ const AuthController = {
       const hashedPassword = await bcrypt.hash(userReq.password, saltRounds);
       const { id } = await jwtService.verifyEmailToken(userReq.emailToken);
       const { password, ...result } = (
-        await UserModel.findByIdAndUpdate(id, {
-          password: hashedPassword,
-          new: true,
-        }).exec()
+        await UserModel.findByIdAndUpdate(
+          id,
+          {
+            password: hashedPassword,
+          },
+          { new: true }
+        ).exec()
       ).toObject();
       actionResponse.createdDataSuccess({ ...result });
     } catch (error) {

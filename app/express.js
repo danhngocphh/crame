@@ -3,15 +3,14 @@ const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
 const _ = require('lodash');
-
 const logger = require('../infrastructure/logger');
 const config = require('../config');
 const { APIError } = require('../helpers');
 
+
 const loadExpress = (route) => {
   const app = express();
   app.set('trust proxy', true);
-
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(helmet());

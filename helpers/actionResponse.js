@@ -4,7 +4,7 @@ class ActionResponse {
     this.title = 'Powered by T&N';
   }
 
-  getDataSucces(data) {
+  getDataSuccess(data) {
     return this.res.status(200).json({
       success: true,
       title: this.title,

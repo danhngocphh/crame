@@ -15,14 +15,14 @@ module.exports = {
   },
   logs: {
     level: process.env.LOG_LEVEL,
-    morganFormat : process.env.MORGAN_FORMAT,
+    morganFormat: process.env.MORGAN_FORMAT,
   },
   cronjobs: {
     collection: process.env.DB_COLLECTION,
     pooltime: process.env.POOL_TIME,
     concurrency: process.env.concurrency,
   },
-  token : {
+  token: {
     access_secret: process.env.ACCESS_TOKEN_SECRET,
     access_expired: process.env.ACCESS_TOKEN_EXPIRED,
     refresh_secret: process.env.REFRESH_TOKEN_SECRET,
@@ -30,13 +30,16 @@ module.exports = {
     email_secret: process.env.EMAIL_TOKEN_SECRET,
     email_expired: process.env.EMAIL_TOKEN_EXPIRED,
   },
-  email : {
+  email: {
     user: process.env.EMAIL_USER,
     password: process.env.EMAIL_PASSWORD,
     template: {
       userConfirmation: 'userConfirmation',
       forgetPassword: 'forgetPassword',
-    }
+    },
+  },
+  frontend: {
+    url: process.env.FRONTEND_URL,
   },
   api: {
     prefix: '/api',
@@ -44,6 +47,11 @@ module.exports = {
   // crawl: {
   //   prefix: '/crawl',
   // },
+  cloudinary : {
+    name: process.env.CLOUDINARY_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  },
   httpStatus: {
     Ok: 200,
     Created: 201,
@@ -52,5 +60,8 @@ module.exports = {
     NotFound: 404,
     ServerError: 500,
   },
-  dataNull: process.env.DATA_NULL
+  dataNull: process.env.DATA_NULL,
+  regex: {
+    phoneNumber: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+  }
 };

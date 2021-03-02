@@ -16,7 +16,7 @@ const loadMongoDb = async () => {
     logger.info(`[Database] Load database successfully on uri : ${uri}`);
     return connection.db;
   } catch (error) {
-    logger.error(`[Database] Load database failed on uri : ${uri} %o`, err);
+    logger.error(`[Database] Load database failed on uri : ${uri} %o`, error);
     throw error;
   }
 };

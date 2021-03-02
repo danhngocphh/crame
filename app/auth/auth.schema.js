@@ -26,6 +26,9 @@ const AuthSchema = {
   confirmEmailPOST: Joi.object({
     emailToken: Joi.string().required(),
   }),
+  checkValidEmailTokenPOST: Joi.object({
+    emailToken: Joi.string().required(),
+  }),
   forgetPasswordPOST: Joi.object({
     email: Joi.string().email({ minDomainSegments: 2 }).required(),
   }),

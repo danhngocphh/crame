@@ -36,6 +36,11 @@ route.post(
   AuthController.resendConfirm
 );
 route.post(
+  '/check-valid',
+  Middleware.isValidate(AuthSchema.checkValidEmailTokenPOST),
+  AuthController.checkValidEmailToken,
+)
+route.post(
   '/forget-password',
   Middleware.isValidate(AuthSchema.forgetPasswordPOST),
   AuthController.forgetPassword

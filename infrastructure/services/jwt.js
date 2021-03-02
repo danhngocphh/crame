@@ -68,14 +68,14 @@ exports.verifyRefreshToken = (token) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, tokenConfig.refresh_secret, async (err, payload) => {
       try {
-        const storedRefreshTokens = await redisClient.lrange(payload.id, 0, -1);
         if (err) {
-          await redisClient.lrem(payload.id, 1, token);
+          if(payload && payload.id) await redisClient.lrem(payload.id, 1, token)
           reject(new APIError(err.message, config.httpStatus.Unauthorized));
         } else {
+          const storedRefreshTokens = await redisClient.lrange(payload.id, 0, -1);
           if (!storedRefreshTokens.includes(token))
             reject(
-              new APIError('Unauthorized', config.httpStatus.Unauthorized)
+              new APIError('You had logout', config.httpStatus.Unauthorized)
             );
           logger.debug(
             `storedRefreshTokens of ${payload.id} : %o`, storedRefreshTokens
@@ -110,7 +110,7 @@ exports.verifyEmailToken = (token) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, tokenConfig.email_secret, (err, payload) => {
       if (err)
-        reject(new APIError(err.message, config.httpStatus.Unauthorized));
+        reject(new APIError(err.message, config.httpStatus.BadRequest));
       resolve(payload);
     });
   });
