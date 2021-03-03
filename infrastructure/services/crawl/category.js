@@ -18,7 +18,7 @@ exports.Shopee = (storeName) => {
             const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find(store.dataCrawlCategory.name).text()  || config.dataNull
+                name: $(value).find(store.dataCrawlCategory.name).text()  || config.crawler.defaultName
             }))
             resolve(category.get());
         } catch (error) {
@@ -37,7 +37,7 @@ exports.Sendo = (storeName) => {
             const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find(store.dataCrawlCategory.name).text()  || config.dataNull
+                name: $(value).find(store.dataCrawlCategory.name).text()  || config.crawler.defaultName
             }))
             resolve(category.get());
         } catch (error) {
@@ -56,7 +56,7 @@ exports.Tiki = (storeName) => {
             const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find(store.dataCrawlCategory.name).text().trim()  || config.dataNull
+                name: $(value).find(store.dataCrawlCategory.name).text().trim()  || config.crawler.defaultName
             }))
             resolve(category.get());
         } catch (error) {
@@ -75,7 +75,7 @@ exports.Lazada = (storeName) => {
             const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map( (index, value) => ({
                 id: index,
-                name: $(value).find(store.dataCrawlCategory.name).text().trim()  || config.dataNull
+                name: $(value).find(store.dataCrawlCategory.name).text().trim()  || config.crawler.defaultName
             }))
             resolve(category.get());
         } catch (error) {

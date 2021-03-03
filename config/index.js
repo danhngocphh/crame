@@ -60,7 +60,9 @@ module.exports = {
     NotFound: 404,
     ServerError: 500,
   },
-  dataNull: process.env.DATA_NULL,
+  crawler:{
+    defaultName: "Đang Cập Nhật"
+  },
   regex: {
     phoneNumber: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
   }
