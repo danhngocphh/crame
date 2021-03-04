@@ -53,6 +53,12 @@ const store = new mongoose.Schema({
         totalCategory: { type: String,  trim: true },
         name: { type: String,  trim: true }
     },
+    dataCrawlProduct:{
+        totalItem: { type: String,  trim: true },
+        image: { type: String,  trim: true },
+        name: { type: String,  trim: true },
+        price: { type: String,  trim: true }
+    },
     isActive: {
         type: Boolean,
         default: true,

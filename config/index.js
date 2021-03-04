@@ -61,7 +61,9 @@ module.exports = {
     ServerError: 500,
   },
   crawler:{
-    defaultName: "Đang Cập Nhật"
+    defaultName: "Đang Cập Nhật",
+    nullStore: "Cant find store!",
+    nullRootCategory: "Cant find rootCategory!",
   },
   regex: {
     phoneNumber: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,

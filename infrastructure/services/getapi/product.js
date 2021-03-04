@@ -10,7 +10,13 @@ exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            if (!rootCategory) {
+                reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
+              }
             const store = await StoreModel.findOne({ name: storeName });
+            if(!store){
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
             const params =  store.params;
             params.match_id = categoryId;
             params.limit = limit;
@@ -45,7 +51,13 @@ exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            if (!rootCategory) {
+                reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
+              }
             const store = await StoreModel.findOne({ name: storeName });
+            if(!store){
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
             const data = await axios.get(
                 store.dataCallAPI.urlHeader + categoryId + store.dataCallAPI.urlMiddle + limit,
                 {
@@ -76,7 +88,13 @@ exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            if (!rootCategory) {
+                reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
+              }
             const store = await StoreModel.findOne({ name: storeName });
+            if(!store){
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
             const params =  store.params;
             params.category = categoryId;
             params.limit = limit;

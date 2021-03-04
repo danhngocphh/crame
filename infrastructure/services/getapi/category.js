@@ -2,7 +2,6 @@ let axios = require('axios').default;
 const { APIError } = require('../../../helpers');
 const config = require('../../../config');
 const _ = require('lodash');
-const ObjectID = require('mongodb').ObjectID;
 const { store: StoreModel } = require('../../database/models')
 
 
@@ -10,6 +9,9 @@ exports.Shopee = (storeName) => {
     return new Promise( async (resolve, reject) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
+            if(!store){
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
             const data = await axios.get(
                 store.url.category,
                 {
@@ -27,43 +29,13 @@ exports.Shopee = (storeName) => {
     })
 };
 
-// exports.Sendo = (storename, nameRootCategory, categoryid, limit) => {
-//     return new Promise( async (resolve, reject) => {
-//         try {
-//             const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
-//             const store = await StoreModel.findOne({ name: storename });
-//             const data = await axios.get(
-//                 store.dataCallAPI.urlHeader + categoryid + store.dataCallAPI.urlMiddle + limit,
-//                 {
-//                   headers: {
-//                     'Referer': store.url
-//                   }
-//                 }
-//               );
-//               const _products =  _.map(data.data.data, o => ({
-//                 remoteId: o.id,
-//                 storeId: new ObjectID(store.id),
-//                 rootCategoryId: new ObjectID(rootCategory.id),
-//                 url: store.dataCallAPI.urlProduct + o.category_path,
-//                 image: o.image,
-//                 name: o.name,
-//                 price: o.sale_price_min,
-//                 priceMin: o.sale_price_min,
-//                 priceMax: o.sale_price_max,
-//                 brand: "...",
-//                 type: o.product_type.toString()
-//               }))
-//             resolve(_products);
-//         } catch (error) {
-//             reject(new APIError(error.message, config.httpStatus.BadRequest));
-//         }
-//     })
-// };
-
 exports.Tiki =  (storeName) => {
     return new Promise( async (resolve, reject) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
+            if(!store){
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
             const data = await axios.get(
                 store.url.category,
                 {

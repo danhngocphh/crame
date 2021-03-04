@@ -26,7 +26,7 @@ const CrawlController = {
         actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
-          data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+          data: config.crawler.nullStore,
         });
       }
     } catch (error) {
@@ -53,8 +53,8 @@ const CrawlController = {
         saveDB.category(dataReq.storeName, category);
         actionResponse.getCategoryCrawled(category, dataReq.storeName);
       } else {
-        throw new APIError('Cant get product', config.httpStatus.BadRequest, {
-          data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+        throw new APIError('Cant get category', config.httpStatus.BadRequest, {
+          data: config.crawler.nullStore,
         });
       }
     } catch (error) {
@@ -97,26 +97,19 @@ const CrawlController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       let category;
-      switch (dataReq.storeName) {
-        case "shopee":
-          category = await crawlCategory.Shopee(dataReq.storeName);
-          break;
-        case "tiki":
-          category = await crawlCategory.Tiki(dataReq.storeName);
-          break;
-        case "sendo":
-          category = await crawlCategory.Sendo(dataReq.storeName);
-          break;
-        case "lazada":
-          category = await crawlCategory.Lazada(dataReq.storeName);
-          break;
+      if(!dataReq.storeName){
+        throw new APIError('Cant get storeName', config.httpStatus.BadRequest, {
+          data: `Cant get category form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+        });
+      }else{
+        category = await crawlCategory.getData(dataReq.storeName);
       }
       if (category && category.length > 0) {
         saveDB.category(dataReq.storeName, category);
         actionResponse.getCategoryCrawled(category, dataReq.storeName);
       } else {
-        throw new APIError('Cant get product', config.httpStatus.BadRequest, {
-          data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+        throw new APIError('Cant get category', config.httpStatus.BadRequest, {
+          data: `Cant get category form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
         });
       }
     } catch (error) {
