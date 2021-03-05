@@ -22,7 +22,6 @@ const CrawlController = {
           break;
       }
       if (products && products.length > 0) {
-        saveDB.product(products);
         actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
@@ -50,7 +49,6 @@ const CrawlController = {
           break;
       }
       if (category && category.length > 0) {
-        saveDB.category(dataReq.storeName, category);
         actionResponse.getCategoryCrawled(category, dataReq.storeName);
       } else {
         throw new APIError('Cant get category', config.httpStatus.BadRequest, {
@@ -81,7 +79,6 @@ const CrawlController = {
           break;
       }
       if (products && products.length > 0) {
-        saveDB.product(products);
         actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
@@ -112,7 +109,6 @@ const CrawlController = {
           break;
       }
       if (category && category.length > 0) {
-        saveDB.category(dataReq.storeName, category);
         actionResponse.getCategoryCrawled(category, dataReq.storeName);
       } else {
         throw new APIError('Cant get category', config.httpStatus.BadRequest, {

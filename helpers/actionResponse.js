@@ -35,6 +35,14 @@ class ActionResponse {
       data,
     });
   }
+  
+  saveComplete(data) {
+    return this.res.status(200).json({
+      success: true,
+      msg: "Save complete!",
+      data,
+    });
+  }
 }
 
 module.exports = ActionResponse;

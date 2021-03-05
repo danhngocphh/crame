@@ -4,7 +4,6 @@ const config = require('../../../config');
 const _ = require('lodash');
 const { store: StoreModel } = require('../../database/models')
 
-
 exports.Shopee = (storeName) => {
     return new Promise( async (resolve, reject) => {
         try {
