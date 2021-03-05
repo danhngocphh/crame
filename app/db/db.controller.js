@@ -3,18 +3,17 @@ const { saveDB } = require('../../infrastructure/services');
 const _ = require('lodash');
 const config = require('../../config');
 
-
 const dbController = {
-  updateCategory: async (req, res, next) => {
+  setCategory: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       const category = dataReq.data;
-      if (category && category.length > 0 && saveDB.category(dataReq.storeName, category)) {
+      if (category && category.length > 0 && saveDB.setCategory(dataReq.storeName, category)) {
         actionResponse.saveComplete(category);
       } else {
-        throw new APIError('Cant update category', config.httpStatus.BadRequest, {
-          data: 'Cant update category',
+        throw new APIError(config.crawler.errSetCategory, config.httpStatus.BadRequest, {
+          data: config.crawler.errSetCategory,
         });
       }
     } catch (error) {
@@ -26,12 +25,11 @@ const dbController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       const category = dataReq.data;
-      console.log(category);
       if (category && category.length > 0 && saveDB.addCategory(dataReq.storeName, category)) {
         actionResponse.saveComplete(category, dataReq.storeName, dataReq.categoryId);
       } else {
-        throw new APIError('Cant add category', config.httpStatus.BadRequest, {
-          data: 'Cant add category',
+        throw new APIError(config.crawler.errAddCategory, config.httpStatus.BadRequest, {
+          data: config.crawler.errAddCategory,
         });
       }
     } catch (error) {
@@ -43,11 +41,11 @@ const dbController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       const product = dataReq.data;
-      if (product && product.length > 0 && saveDB.product(product)) {
+      if (product && product.length > 0 && saveDB.addProduct(product)) {
         actionResponse.saveComplete(product);
       } else {
-        throw new APIError('Cant add product', config.httpStatus.BadRequest, {
-          data: 'Cant add product',
+        throw new APIError(config.crawler.errAddProduct, config.httpStatus.BadRequest, {
+          data: config.crawler.errAddProduct,
         });
       }
     } catch (error) {

@@ -6,9 +6,9 @@ const dbSchema = require('./db.schema');
 const route = Router();
 
 route.post(
-    '/update-category',
+    '/set-category',
     Middleware.isValidate(dbSchema.category),
-    dbController.updateCategory
+    dbController.setCategory
 );
 
 route.post(

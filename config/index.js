@@ -64,6 +64,9 @@ module.exports = {
     defaultName: "Đang Cập Nhật",
     nullStore: "Cant find store!",
     nullRootCategory: "Cant find rootCategory!",
+    errSetCategory: "Cant set category!",
+    errAddCategory: "Cant add category!",
+    errAddProduct: "Cant add product!"
   },
   regex: {
     phoneNumber: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,

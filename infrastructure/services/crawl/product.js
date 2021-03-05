@@ -58,7 +58,7 @@ exports.Sendo = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: common.getIdProduct(storeName ,$(value).attr('href')),
+        remoteId: common.getIdProduct(storeName, $(value).attr('href')),
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: store.headers.Referer + $(value).attr('href') || config.crawler.defaultName,
