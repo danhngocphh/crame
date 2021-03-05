@@ -97,12 +97,19 @@ const CrawlController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       let category;
-      if(!dataReq.storeName){
-        throw new APIError('Cant get storeName', config.httpStatus.BadRequest, {
-          data: `Cant get category form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
-        });
-      }else{
-        category = await crawlCategory.getData(dataReq.storeName);
+      switch (dataReq.storeName) {
+        case "shopee":
+          category = await crawlCategory.Shopee(dataReq.storeName);
+          break;
+        case "tiki":
+          category = await crawlCategory.Tiki(dataReq.storeName);
+          break;
+        case "sendo":
+          category = await crawlCategory.Sendo(dataReq.storeName);
+          break;
+        case "lazada":
+          category = await crawlCategory.Lazada(dataReq.storeName);
+          break;
       }
       if (category && category.length > 0) {
         saveDB.category(dataReq.storeName, category);

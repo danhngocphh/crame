@@ -23,7 +23,7 @@ exports.Shopee = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: $(value).find('a').attr('href') || config.crawler.defaultName,
+        remoteId: $(value).find('a').attr('href').substring($(value).find('a').attr('href').length - 10) || config.crawler.defaultName,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: store.headers.Referer + $(value).find('a').attr('href') || config.crawler.defaultName,
@@ -58,11 +58,11 @@ exports.Sendo = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: $(value).attr('href'),
+        remoteId: getId(storeName ,$(value).attr('href')),
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
-        url: store.url + $(value).attr('href') || config.crawler.defaultName,
-        image: $(value).find(store.dataCrawlProduct.image).find('img').attr('src') || config.crawler.defaultName,
+        url: store.headers.Referer + $(value).attr('href') || config.crawler.defaultName,
+        image: store.headers.Referer + $(value).find(store.dataCrawlProduct.image).find('img').attr('src').substring(1) || config.crawler.defaultName,
         name: $(value).find(store.dataCrawlProduct.name).text() || config.crawler.defaultName,
         price: parseInt($(value).find(store.dataCrawlProduct.price).text()) || config.crawler.defaultName,
         priceMin: parseInt($(value).find(store.dataCrawlProduct.price).text()) || config.crawler.defaultName,
@@ -93,7 +93,7 @@ exports.Tiki = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: $(value).attr('href') || config.crawler.defaultName,
+        remoteId: getId(storeName, $(value).attr('href')) || config.crawler.defaultName,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: store.headers.Referer + $(value).attr('href') || config.crawler.defaultName,
@@ -128,10 +128,10 @@ exports.Lazada = (storeName, nameRootCategory, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: $(value).attr('href') || config.crawler.defaultName,
+        remoteId: getId(storeName, $(value).find('a').attr('href')) || config.crawler.defaultName,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
-        url: store.headers.Referer + $(value).attr('href') || config.crawler.defaultName,
+        url: store.headers.Referer + $(value).find('a').attr('href').substring(15) || config.crawler.defaultName,
         image: $(value).find(store.dataCrawlProduct.image).find('img').attr('src') || config.crawler.defaultName,
         name: $(value).find(store.dataCrawlProduct.name).text() || config.crawler.defaultName,
         price: parseInt($(value).find(store.dataCrawlProduct.price).text()) || config.crawler.defaultName,
@@ -145,6 +145,20 @@ exports.Lazada = (storeName, nameRootCategory, url) => {
       reject(new APIError(error.message, config.httpStatus.BadRequest));
     }
   })
+};
+
+const getId = (storeName, value) => {
+  if (storeName == "sendo" || storeName == "tiki") {
+      const str = value != undefined ? value.split(".") : ['', ''];
+      const result = str[0].substring(str[0].length - 8); 
+      return result
+  } else if(storeName == "lazada"){
+    const str = value != undefined ? value.split(".") : ['', ''];
+    const result = str[0].substring(str[0].length - 10); 
+    return result
+  } else{
+    return config.crawler.defaultName
+  }
 };
 
 const getPageContent = async (url) => {

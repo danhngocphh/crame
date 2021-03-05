@@ -17,6 +17,10 @@ const store = new mongoose.Schema({
             type: String,
             required: true
         },
+        url: {
+            type: String,
+            required: true
+        },
         isActive: {
             type: Boolean,
             default: true,

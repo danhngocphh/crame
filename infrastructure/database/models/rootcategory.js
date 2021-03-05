@@ -29,7 +29,9 @@ const rootcategory = new mongoose.Schema({
     
     childCategory: [{
         categoryId: Number,
-        shopName: String
+        name: String,
+        shopName: String,
+        url: String
     }],
     description: {
         type: String

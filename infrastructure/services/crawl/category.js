@@ -6,7 +6,7 @@ const cheerio = require("cheerio");
 const { store: StoreModel } = require('../../database/models');
 const { parseInt } = require('lodash');
 
-exports.getData = (storeName) => {
+exports.Shopee = (storeName) => {
     return new Promise(async (resolve, reject) => {
         try {
             const store = await StoreModel.findOne({ name: storeName });
@@ -19,16 +19,78 @@ exports.getData = (storeName) => {
             const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map((index, value) => ({
                 id: getId(storeName, $(value).attr('href')),
-                name: $(value).find(store.dataCrawlCategory.name).text() || config.crawler.defaultName
+                name: $(value).find(store.dataCrawlCategory.name).text().trim() || config.crawler.defaultName,
+                url: store.headers.Referer + $(value).attr('href')
             }))
-            // let cat = [];
-            // console.log(totalCategory);
-            // for (const i in totalCategory) {
-            //     cat[i] = {
-            //         id: getId(storeName, $(totalCategory[i]).attr('href')),
-            //         name: $(totalCategory[i]).find(store.dataCrawlCategory.name).text()  || config.crawler.defaultName
-            //     }
-            // }
+            resolve(category.get());
+        } catch (error) {
+            reject(new APIError(error.message, config.httpStatus.BadRequest));
+        }
+    })
+};
+
+exports.Tiki = (storeName) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const store = await StoreModel.findOne({ name: storeName });
+            if (!store) {
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
+            const url = store.dataCrawlCategory.url;
+            const pageContent = await getPageContent(url);
+            const $ = await cheerio.load(pageContent);
+            const totalCategory = $(store.dataCrawlCategory.totalCategory);
+            const category = totalCategory.map((index, value) => ({
+                id: index,
+                name: $(value).find(store.dataCrawlCategory.name).text().trim() || config.crawler.defaultName,
+                url: $(value).find('a').attr('href')
+            }))
+            resolve(category.get());
+        } catch (error) {
+            reject(new APIError(error.message, config.httpStatus.BadRequest));
+        }
+    })
+};
+
+exports.Sendo = (storeName) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const store = await StoreModel.findOne({ name: storeName });
+            if (!store) {
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
+            const url = store.dataCrawlCategory.url;
+            const pageContent = await getPageContent(url);
+            const $ = await cheerio.load(pageContent);
+            const totalCategory = $(store.dataCrawlCategory.totalCategory);
+            const category = totalCategory.map((index, value) => ({
+                id: index,
+                name: $(value).find(store.dataCrawlCategory.name).text().trim() || config.crawler.defaultName,
+                url: store.headers.Referer + $(value).find('a').attr('href')
+            }))
+            resolve(category.get());
+        } catch (error) {
+            reject(new APIError(error.message, config.httpStatus.BadRequest));
+        }
+    })
+};
+
+exports.Lazada = (storeName) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const store = await StoreModel.findOne({ name: storeName });
+            if (!store) {
+                reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
+            }
+            const url = store.dataCrawlCategory.url;
+            const pageContent = await getPageContent(url);
+            const $ = await cheerio.load(pageContent);
+            const totalCategory = $(store.dataCrawlCategory.totalCategory);
+            const category = totalCategory.map((index, value) => ({
+                id: index,
+                name: $(value).find(store.dataCrawlCategory.name).text().trim() || config.crawler.defaultName,
+                url: store.headers.Referer + $(value).attr('href').substring(15)
+            }))
             resolve(category.get());
         } catch (error) {
             reject(new APIError(error.message, config.httpStatus.BadRequest));

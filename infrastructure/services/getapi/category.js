@@ -20,7 +20,8 @@ exports.Shopee = (storeName) => {
             );
             const category = _.map(data.data.data.category_list, o => ({
                 id: o.catid,
-                name: o.display_name
+                name: o.display_name,
+                url: getUrl(storeName,store.headers.Referer,o.catid)
             }))
             resolve(category);
         } catch (error) {
@@ -44,11 +45,21 @@ exports.Tiki =  (storeName) => {
             );
             const category = _.map(data.data.data, o => ({
                 id: o.item.id,
-                name: o.item.title
+                name: o.item.title,
+                url: o.item.url
             }))
             resolve(category);
         } catch (error) {
             reject(new APIError(error.message, config.httpStatus.BadRequest));
         }
     })
+};
+
+const getUrl = (storeName,urlHome, id) => {
+    if (storeName == "shopee") {
+        const result =  id != undefined ? urlHome + "/product-cat." +id  : config.crawler.defaultName; 
+        return result
+    } else {
+        return 0
+    }
 };
