@@ -6,10 +6,10 @@ const { store: StoreModel } = require('../../database/models');
 const { parseInt } = require('lodash');
 const common = require("./common");
 
-exports.Shopee = (storeName) => {
+exports.Shopee = (storeId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if (!store) {
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }
@@ -29,10 +29,10 @@ exports.Shopee = (storeName) => {
     })
 };
 
-exports.Tiki = (storeName) => {
+exports.Tiki = (storeId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if (!store) {
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }
@@ -52,10 +52,10 @@ exports.Tiki = (storeName) => {
     })
 };
 
-exports.Sendo = (storeName) => {
+exports.Sendo = (storeId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if (!store) {
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }
@@ -75,10 +75,10 @@ exports.Sendo = (storeName) => {
     })
 };
 
-exports.Lazada = (storeName) => {
+exports.Lazada = (storeId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if (!store) {
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }

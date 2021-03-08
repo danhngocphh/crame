@@ -7,14 +7,14 @@ const { store: StoreModel, rootcategory: rootCategoryModel } = require('../../da
 const common = require("./common");
 
 
-exports.Shopee = (storeName, nameRootCategory, url) => {
+exports.Shopee = (storeId, rootCategoryId, url) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+      const rootCategory = await rootCategoryModel.findOne({ _id: rootCategoryId });
       if (!rootCategory) {
         reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
       }
-      const store = await StoreModel.findOne({ name: storeName });
+      const store = await StoreModel.findOne({ _id: storeId });
       if (!store) {
         reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
       }
@@ -42,14 +42,14 @@ exports.Shopee = (storeName, nameRootCategory, url) => {
   })
 };
 
-exports.Sendo = (storeName, nameRootCategory, url) => {
+exports.Sendo = (storeId, rootCategoryId, url) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+      const rootCategory = await rootCategoryModel.findOne({ _id: rootCategoryId });
       if (!rootCategory) {
         reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
       }
-      const store = await StoreModel.findOne({ name: storeName });
+      const store = await StoreModel.findOne({  _id: storeId });
       if (!store) {
         reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
       }
@@ -77,14 +77,14 @@ exports.Sendo = (storeName, nameRootCategory, url) => {
   })
 };
 
-exports.Tiki = (storeName, nameRootCategory, url) => {
+exports.Tiki = (storeId, rootCategoryId, url) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+      const rootCategory = await rootCategoryModel.findOne({ _id: rootCategoryId });
       if (!rootCategory) {
         reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
       }
-      const store = await StoreModel.findOne({ name: storeName });
+      const store = await StoreModel.findOne({  _id: storeId });
       if (!store) {
         reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
       }
@@ -112,14 +112,14 @@ exports.Tiki = (storeName, nameRootCategory, url) => {
   })
 };
 
-exports.Lazada = (storeName, nameRootCategory, url) => {
+exports.Lazada = (storeId, rootCategoryId, url) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+      const rootCategory = await rootCategoryModel.findOne({ _id: rootCategoryId });
       if (!rootCategory) {
         reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
       }
-      const store = await StoreModel.findOne({ name: storeName });
+      const store = await StoreModel.findOne({  _id: storeId });
       if (!store) {
         reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
       }

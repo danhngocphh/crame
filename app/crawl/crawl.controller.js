@@ -10,19 +10,19 @@ const CrawlController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       let products;
-      switch (dataReq.storeName) {
+      switch (dataReq.storeId) {
         case "shopee":
-          products = await getProductAPI.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Shopee(dataReq.storeId, dataReq.rootCategoryId, dataReq.categoryId, dataReq.limit);
           break;
         case "tiki":
-          products = await getProductAPI.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Tiki(dataReq.storeId, dataReq.rootCategoryId, dataReq.categoryId, dataReq.limit);
           break;
         case "sendo":
-          products = await getProductAPI.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.categoryId, dataReq.limit);
+          products = await getProductAPI.Sendo(dataReq.storeId, dataReq.rootCategoryId, dataReq.categoryId, dataReq.limit);
           break;
       }
       if (products && products.length > 0) {
-        actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
+        actionResponse.getDataCrawled(products, dataReq.storeId, dataReq.categoryId);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
           data: config.crawler.nullStore,
@@ -37,19 +37,19 @@ const CrawlController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       let category;
-      switch (dataReq.storeName) {
+      switch (dataReq.storeId) {
         case "shopee":
-          category = await getCategoryAPI.Shopee(dataReq.storeName);
+          category = await getCategoryAPI.Shopee(dataReq.storeId);
           break;
         case "tiki":
-          category = await getCategoryAPI.Tiki(dataReq.storeName);
+          category = await getCategoryAPI.Tiki(dataReq.storeId);
           break;
         case "sendo":
-          category = await getProductAPI.Sendo(dataReq.storeName);
+          category = await getProductAPI.Sendo(dataReq.storeId);
           break;
       }
       if (category && category.length > 0) {
-        actionResponse.getCategoryCrawled(category, dataReq.storeName);
+        actionResponse.getCategoryCrawled(category, dataReq.storeId);
       } else {
         throw new APIError('Cant get category', config.httpStatus.BadRequest, {
           data: config.crawler.nullStore,
@@ -64,25 +64,25 @@ const CrawlController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       let products;
-      switch (dataReq.storeName) {
+      switch (dataReq.storeId) {
         case "shopee":
-          products = await crawlProduct.Shopee(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
+          products = await crawlProduct.Shopee(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
         case "tiki":
-          products = await crawlProduct.Tiki(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
+          products = await crawlProduct.Tiki(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
         case "sendo":
-          products = await crawlProduct.Sendo(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
+          products = await crawlProduct.Sendo(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
         case "lazada":
-          products = await crawlProduct.Lazada(dataReq.storeName, dataReq.nameRootCategory, dataReq.url);
+          products = await crawlProduct.Lazada(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
       }
       if (products && products.length > 0) {
-        actionResponse.getDataCrawled(products, dataReq.storeName, dataReq.categoryId);
+        actionResponse.getDataCrawled(products, dataReq.storeId, dataReq.categoryId);
       } else {
         throw new APIError('Cant get product', config.httpStatus.BadRequest, {
-          data: `Cant get product form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+          data: `Cant get product form ${dataReq.storeId}_${dataReq.rootCategoryId}`,
         });
       }
     } catch (error) {
@@ -94,25 +94,25 @@ const CrawlController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       let category;
-      switch (dataReq.storeName) {
+      switch (dataReq.storeId) {
         case "shopee":
-          category = await crawlCategory.Shopee(dataReq.storeName);
+          category = await crawlCategory.Shopee(dataReq.storeId);
           break;
         case "tiki":
-          category = await crawlCategory.Tiki(dataReq.storeName);
+          category = await crawlCategory.Tiki(dataReq.storeId);
           break;
         case "sendo":
-          category = await crawlCategory.Sendo(dataReq.storeName);
+          category = await crawlCategory.Sendo(dataReq.storeId);
           break;
         case "lazada":
-          category = await crawlCategory.Lazada(dataReq.storeName);
+          category = await crawlCategory.Lazada(dataReq.storeId);
           break;
       }
       if (category && category.length > 0) {
-        actionResponse.getCategoryCrawled(category, dataReq.storeName);
+        actionResponse.getCategoryCrawled(category, dataReq.storeId);
       } else {
         throw new APIError('Cant get category', config.httpStatus.BadRequest, {
-          data: `Cant get category form ${dataReq.storeName}_${dataReq.nameRootCategory}`,
+          data: `Cant get category form ${dataReq.storeId}_${dataReq.rootCategoryId}`,
         });
       }
     } catch (error) {

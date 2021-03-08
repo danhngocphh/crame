@@ -4,10 +4,10 @@ const config = require('../../../config');
 const _ = require('lodash');
 const { store: StoreModel } = require('../../database/models')
 
-exports.Shopee = (storeName) => {
+exports.Shopee = (storeId) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ id: storeId });s
             if(!store){
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }
