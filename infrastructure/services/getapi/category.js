@@ -7,7 +7,7 @@ const { store: StoreModel } = require('../../database/models')
 exports.Shopee = (storeId) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ id: storeId });s
+            const store = await StoreModel.findOne({ _id: storeId });
             if(!store){
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }
@@ -20,7 +20,7 @@ exports.Shopee = (storeId) => {
             const category = _.map(data.data.data.category_list, o => ({
                 id: o.catid,
                 name: o.display_name,
-                url: getUrl(storeName,store.headers.Referer,o.catid)
+                url: getUrl("shopee",store.headers.Referer,o.catid)
             }))
             resolve(category);
         } catch (error) {
@@ -29,10 +29,10 @@ exports.Shopee = (storeId) => {
     })
 };
 
-exports.Tiki =  (storeName) => {
+exports.Tiki =  (storeId) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if(!store){
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }

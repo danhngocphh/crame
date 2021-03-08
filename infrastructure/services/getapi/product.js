@@ -6,14 +6,14 @@ const ObjectID = require('mongodb').ObjectID;
 const { store: StoreModel, rootcategory: rootCategoryModel } = require('../../database/models')
 
 
-exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
+exports.Shopee = (storeId, rootCategoryId, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            const rootCategory = await rootCategoryModel.findOne({ _id: rootCategoryId });
             if (!rootCategory) {
                 reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
               }
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if(!store){
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }
@@ -47,14 +47,14 @@ exports.Shopee = (storeName, nameRootCategory, categoryId, limit) => {
     })
 };
 
-exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
+exports.Sendo = (storeId, rootCategoryId, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            const rootCategory = await rootCategoryModel.findOne({ _id: rootCategoryId });
             if (!rootCategory) {
                 reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
               }
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if(!store){
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }
@@ -84,14 +84,14 @@ exports.Sendo = (storeName, nameRootCategory, categoryId, limit) => {
     })
 };
 
-exports.Tiki = (storeName, nameRootCategory, categoryId, limit) => {
+exports.Tiki = (storeId, rootCategoryId, categoryId, limit) => {
     return new Promise( async (resolve, reject) => {
         try {
-            const rootCategory = await rootCategoryModel.findOne({ name: nameRootCategory });
+            const rootCategory = await rootCategoryModel.findOne({ _id: rootCategoryId });
             if (!rootCategory) {
                 reject(new APIError(config.crawler.nullRootCategory, config.httpStatus.BadRequest));
               }
-            const store = await StoreModel.findOne({ name: storeName });
+            const store = await StoreModel.findOne({ _id: storeId });
             if(!store){
                 reject(new APIError(config.crawler.nullStore, config.httpStatus.BadRequest));
             }

@@ -58,7 +58,7 @@ exports.Sendo = (storeId, rootCategoryId, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: common.getIdProduct(storeName, $(value).attr('href')),
+        remoteId: common.getIdProduct(store.name, $(value).attr('href')),
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: store.headers.Referer + $(value).attr('href') || config.crawler.defaultName,
@@ -93,7 +93,7 @@ exports.Tiki = (storeId, rootCategoryId, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: common.getIdProduct(storeName, $(value).attr('href')) || config.crawler.defaultName,
+        remoteId: common.getIdProduct(store.name, $(value).attr('href')) || config.crawler.defaultName,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: store.headers.Referer + $(value).attr('href') || config.crawler.defaultName,
@@ -128,7 +128,7 @@ exports.Lazada = (storeId, rootCategoryId, url) => {
       const $ = await cheerio.load(pageContent);
       const totalItem = $(store.dataCrawlProduct.totalItem);
       const products = totalItem.map((index, value) => ({
-        remoteId: common.getIdProduct(storeName, $(value).find('a').attr('href')) || config.crawler.defaultName,
+        remoteId: common.getIdProduct(store.name, $(value).find('a').attr('href')) || config.crawler.defaultName,
         storeId: new ObjectID(store.id),
         rootCategoryId: new ObjectID(rootCategory.id),
         url: store.headers.Referer + $(value).find('a').attr('href').substring(15) || config.crawler.defaultName,

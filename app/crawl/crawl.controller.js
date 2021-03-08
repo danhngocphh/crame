@@ -11,13 +11,13 @@ const CrawlController = {
       const { body: dataReq } = req;
       let products;
       switch (dataReq.storeId) {
-        case "shopee":
+        case "601974473bb314a8f475e723":
           products = await getProductAPI.Shopee(dataReq.storeId, dataReq.rootCategoryId, dataReq.categoryId, dataReq.limit);
           break;
-        case "tiki":
+        case "601d021a1e14b1464cb38624":
           products = await getProductAPI.Tiki(dataReq.storeId, dataReq.rootCategoryId, dataReq.categoryId, dataReq.limit);
           break;
-        case "sendo":
+        case "601cfc3d1e14b1464cb38620":
           products = await getProductAPI.Sendo(dataReq.storeId, dataReq.rootCategoryId, dataReq.categoryId, dataReq.limit);
           break;
       }
@@ -38,13 +38,13 @@ const CrawlController = {
       const { body: dataReq } = req;
       let category;
       switch (dataReq.storeId) {
-        case "shopee":
+        case "601974473bb314a8f475e723":
           category = await getCategoryAPI.Shopee(dataReq.storeId);
           break;
-        case "tiki":
+        case "601d021a1e14b1464cb38624":
           category = await getCategoryAPI.Tiki(dataReq.storeId);
           break;
-        case "sendo":
+        case "601cfc3d1e14b1464cb38620":
           category = await getProductAPI.Sendo(dataReq.storeId);
           break;
       }
@@ -65,16 +65,16 @@ const CrawlController = {
       const { body: dataReq } = req;
       let products;
       switch (dataReq.storeId) {
-        case "shopee":
+        case "601974473bb314a8f475e723":
           products = await crawlProduct.Shopee(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
-        case "tiki":
+        case "601d021a1e14b1464cb38624":
           products = await crawlProduct.Tiki(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
-        case "sendo":
+        case "601cfc3d1e14b1464cb38620":
           products = await crawlProduct.Sendo(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
-        case "lazada":
+        case "603e60f31afb23031843da87":
           products = await crawlProduct.Lazada(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
           break;
       }
@@ -95,16 +95,16 @@ const CrawlController = {
       const { body: dataReq } = req;
       let category;
       switch (dataReq.storeId) {
-        case "shopee":
+        case "601974473bb314a8f475e723":
           category = await crawlCategory.Shopee(dataReq.storeId);
           break;
-        case "tiki":
+        case "601d021a1e14b1464cb38624":
           category = await crawlCategory.Tiki(dataReq.storeId);
           break;
-        case "sendo":
+        case "601cfc3d1e14b1464cb38620":
           category = await crawlCategory.Sendo(dataReq.storeId);
           break;
-        case "lazada":
+        case "603e60f31afb23031843da87":
           category = await crawlCategory.Lazada(dataReq.storeId);
           break;
       }

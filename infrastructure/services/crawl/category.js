@@ -18,7 +18,7 @@ exports.Shopee = (storeId) => {
             const $ = await cheerio.load(pageContent);
             const totalCategory = $(store.dataCrawlCategory.totalCategory);
             const category = totalCategory.map((index, value) => ({
-                id: common.getIdProduct(storeName, $(value).attr('href')),
+                id: common.getIdProduct("shopee", $(value).attr('href')),
                 name: $(value).find(store.dataCrawlCategory.name).text().trim() || config.crawler.defaultName,
                 url: store.headers.Referer + $(value).attr('href')
             }))
