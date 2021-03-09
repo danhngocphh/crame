@@ -61,6 +61,7 @@ const store = new mongoose.Schema({
         totalItem: { type: String,  trim: true },
         image: { type: String,  trim: true },
         name: { type: String,  trim: true },
+        detail: { type: String,  trim: true },
         price: { type: String,  trim: true }
     },
     isActive: {

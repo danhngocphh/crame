@@ -10,6 +10,11 @@ const getIdCategory = (storeName, value) => {
     }
 };
 
+const getUrlImage = (value) => {
+    const str = value.split("&quot;");
+    return str[1]
+};
+
 const getIdProduct = (storeName, value) => {
     if (storeName == "sendo" || storeName == "tiki") {
         const str = value != undefined ? value.split(".") : ['', ''];
@@ -60,5 +65,6 @@ module.exports = {
     getIdCategory,
     getIdProduct,
     getPageContent,
-    autoScroll
+    autoScroll,
+    getUrlImage
 }

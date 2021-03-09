@@ -39,6 +39,7 @@ const product = new mongoose.Schema({
   },
   priceMin: Number,
   priceMax: Number,
+  detail: String,
   brand: String,
   type: String,
   productCompare: String,
