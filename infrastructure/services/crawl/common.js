@@ -18,7 +18,7 @@ const getUrlImage = (value) => {
 const getIdProduct = (storeName, value) => {
     if (storeName == "sendo" || storeName == "tiki") {
         const str = value != undefined ? value.split(".") : ['', ''];
-        const result = str[0].substring(str[0].length - 8); 
+        const result = str[1].substring(str[1].length - 8); 
         return result
     } else if(storeName == "lazada"){
       const str = value != undefined ? value.split(".") : ['', ''];

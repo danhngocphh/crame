@@ -88,16 +88,16 @@ exports.Sendo = (storeId, rootCategoryId, url) => {
         let newPage = await browser.newPage();
         await newPage.goto(link);
         await newPage.waitFor(10000);
-        dataObj['remoteId'] = link.substring(link.length - 10) || config.crawler.defaultName;
+        dataObj['remoteId'] = common.getIdProduct(store.name, link) || config.crawler.defaultName;
         dataObj['storeId'] = new ObjectID(store.id);
         dataObj['rootCategoryId'] = new ObjectID(rootCategory.id);
         dataObj['url'] = link || config.crawler.defaultName; 
-        dataObj['image'] = common.getUrlImage(await newPage.$eval(store.dataCrawlProduct.image, text => text.outerHTML))|| config.crawler.defaultName;
+        dataObj['image'] = store.headers.Referer + await newPage.$eval(store.dataCrawlProduct.image, imgs => imgs.getAttribute('src').substring(1))|| config.crawler.defaultName;
         dataObj['name'] = await newPage.$eval(store.dataCrawlProduct.name, text => text.textContent)|| config.crawler.defaultName;
         dataObj['price'] = await newPage.$eval(store.dataCrawlProduct.price, text => text.textContent)|| config.crawler.defaultName;
         dataObj['priceMin'] = await newPage.$eval(store.dataCrawlProduct.price, text => text.textContent)|| config.crawler.defaultName;
         dataObj['priceMax'] = await newPage.$eval(store.dataCrawlProduct.price, text => text.textContent)|| config.crawler.defaultName;
-        dataObj['detail'] = await newPage.$eval(store.dataCrawlProduct.detail, text => text.textContent)|| config.crawler.defaultName; 
+        dataObj['detail'] = await newPage.$eval(store.dataCrawlProduct.name, text => text.textContent)|| config.crawler.defaultName; 
         dataObj['brand'] = config.crawler.defaultName;
         dataObj['type'] = config.crawler.defaultName;
         resolve(dataObj);
@@ -159,7 +159,7 @@ exports.Tiki = (storeId, rootCategoryId, url) => {
         dataObj['storeId'] = new ObjectID(store.id);
         dataObj['rootCategoryId'] = new ObjectID(rootCategory.id);
         dataObj['url'] = link || config.crawler.defaultName; 
-        dataObj['image'] = common.getUrlImage(await newPage.$eval(store.dataCrawlProduct.image, text => text.outerHTML))|| config.crawler.defaultName;
+        dataObj['image'] = await newPage.$eval(store.dataCrawlProduct.image, imgs => imgs.getAttribute('src'))|| config.crawler.defaultName;
         dataObj['name'] = await newPage.$eval(store.dataCrawlProduct.name, text => text.textContent)|| config.crawler.defaultName;
         dataObj['price'] = await newPage.$eval(store.dataCrawlProduct.price, text => text.textContent)|| config.crawler.defaultName;
         dataObj['priceMin'] = await newPage.$eval(store.dataCrawlProduct.price, text => text.textContent)|| config.crawler.defaultName;
@@ -226,7 +226,7 @@ exports.Lazada = (storeId, rootCategoryId, url) => {
         dataObj['storeId'] = new ObjectID(store.id);
         dataObj['rootCategoryId'] = new ObjectID(rootCategory.id);
         dataObj['url'] = link || config.crawler.defaultName; 
-        dataObj['image'] = common.getUrlImage(await newPage.$eval(store.dataCrawlProduct.image, text => text.outerHTML))|| config.crawler.defaultName;
+        dataObj['image'] = store.headers.Referer + await newPage.$eval(store.dataCrawlProduct.image, imgs => imgs.getAttribute('src').substring(1))|| config.crawler.defaultName;
         dataObj['name'] = await newPage.$eval(store.dataCrawlProduct.name, text => text.textContent)|| config.crawler.defaultName;
         dataObj['price'] = await newPage.$eval(store.dataCrawlProduct.price, text => text.textContent)|| config.crawler.defaultName;
         dataObj['priceMin'] = await newPage.$eval(store.dataCrawlProduct.price, text => text.textContent)|| config.crawler.defaultName;
