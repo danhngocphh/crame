@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const getIdCategory = (storeName, value) => {
     if (storeName == "shopee") {
         const id = value != undefined ? value.split(".") : ['', 0];
-        const result = id[1] != undefined ? parseInt(id[1]) : 0; 
+        const result = id[1] != undefined ? parseInt(id[1]) : 0;
         return result
     } else {
         return 0
@@ -16,18 +16,22 @@ const getUrlImage = (value) => {
 };
 
 const getIdProduct = (storeName, value) => {
-    if (storeName == "sendo" || storeName == "tiki") {
+    if (storeName == "sendo") {
         const str = value != undefined ? value.split(".") : ['', ''];
-        const result = str[1].substring(str[1].length - 8); 
+        const result = str[1].substring(str[1].length - 8);
         return result
-    } else if(storeName == "lazada"){
-      const str = value != undefined ? value.split(".") : ['', ''];
-      const result = str[2].substring(str[2].length - 10); 
-      return result
-    } else{
-      return config.crawler.defaultName
+    } else if (storeName == "tiki") {
+        const str = value != undefined ? value.split(".") : ['', ''];
+        const result = str[1].substring(str[1].length - 8);
+        return result
+    } else if (storeName == "lazada") {
+        const str = value != undefined ? value.split(".") : ['', ''];
+        const result = str[2].substring(str[2].length - 10);
+        return result
+    } else {
+        return config.crawler.defaultName
     }
-  };
+};
 
 const getPageContent = async (url) => {
     try {
