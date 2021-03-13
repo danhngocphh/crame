@@ -1,5 +1,19 @@
 const puppeteer = require("puppeteer");
 
+const launchBrowserInstance = async () => {
+    try {
+      console.log('[Debug] Creating the browser');
+      const browserInstance = await puppeteer.launch({
+        headless: false,
+        args: ['--no-sandbox', '--start-maximized'],
+        defaultViewport: null,
+      });
+      return browserInstance;
+    } catch (error) {
+      console.log('[Error]::browser', error);
+    }
+  };
+
 const getIdCategory = (storeName, value) => {
     if (storeName == "shopee") {
         const id = value != undefined ? value.split(".") : ['', 0];
@@ -66,6 +80,7 @@ async function autoScroll(page) {
 }
 
 module.exports = {
+    launchBrowserInstance,
     getIdCategory,
     getIdProduct,
     getPageContent,

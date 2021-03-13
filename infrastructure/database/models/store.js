@@ -6,13 +6,12 @@ const store = new mongoose.Schema({
         required: true,
         unique: true
     },
-    // shopee_77 menFS
-    // shopee_77
+    baseUrl: {
+        type: String,
+        required: true,
+        unique: true
+    },
     category: [{
-        id: {
-            type: Number,
-            required: true
-        },
         name: {
             type: String,
             required: true
@@ -26,9 +25,9 @@ const store = new mongoose.Schema({
             default: true,
         }
     }],
-    url: {
-        type: Object,
-        required: true
+    urlCallAPI: {
+        product: { type: String,  trim: true },
+        category: { type: String,  trim: true }
     },
     headers: {
         type: Object,
@@ -53,9 +52,11 @@ const store = new mongoose.Schema({
         imageProduct:{ type: String,  trim: true }
     },
     dataCrawlCategory:{
-        url: { type: String,  trim: true },
-        totalCategory: { type: String,  trim: true },
-        name: { type: String,  trim: true }
+        categoryPath: { type: String,  trim: true },
+        steps: [{
+            name: { type: String,  trim: true },
+            selector: { type: String,  trim: true }
+        }]
     },
     dataCrawlProduct:{
         totalItem: { type: String,  trim: true },

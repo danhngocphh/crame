@@ -1,8 +1,8 @@
 const { ActionResponse, APIError } = require('../../helpers');
-const { crawlProduct, crawlCategory, getProductAPI, getCategoryAPI, saveDB } = require('../../infrastructure/services');
-const _ = require('lodash');
+const { getProductAPI, getCategoryAPI, saveDB } = require('../../infrastructure/services');
+const crawler = require("../../infrastructure/services/crawl")
+const common = require("../../infrastructure/services/crawl/common")
 const config = require('../../config');
-
 
 const CrawlController = {
   callApiProduct: async (req, res, next) => {
@@ -63,21 +63,12 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      let products;
-      switch (dataReq.storeId) {
-        case "601974473bb314a8f475e723":
-          products = await crawlProduct.Shopee(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
-          break;
-        case "601d021a1e14b1464cb38624":
-          products = await crawlProduct.Tiki(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
-          break;
-        case "601cfc3d1e14b1464cb38620":
-          products = await crawlProduct.Sendo(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
-          break;
-        case "603e60f31afb23031843da87":
-          products = await crawlProduct.Lazada(dataReq.storeId, dataReq.rootCategoryId, dataReq.url);
-          break;
-      }
+      const browserInstance = await common.launchBrowserInstance();
+      const products = await crawler.Product(browserInstance, dataReq.storeId, dataReq.rootCategoryId, dataReq.url)
+      // Make sure all pages will close
+      const pages = await browserInstance.pages();
+      await Promise.all(pages.map((page) => page.close()));
+      await browserInstance.close();
       if (products && products.length > 0) {
         actionResponse.getDataCrawled(products, dataReq.storeId, dataReq.categoryId);
       } else {
@@ -93,21 +84,15 @@ const CrawlController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
-      let category;
-      switch (dataReq.storeId) {
-        case "601974473bb314a8f475e723":
-          category = await crawlCategory.Shopee(dataReq.storeId);
-          break;
-        case "601d021a1e14b1464cb38624":
-          category = await crawlCategory.Tiki(dataReq.storeId);
-          break;
-        case "601cfc3d1e14b1464cb38620":
-          category = await crawlCategory.Sendo(dataReq.storeId);
-          break;
-        case "603e60f31afb23031843da87":
-          category = await crawlCategory.Lazada(dataReq.storeId);
-          break;
-      }
+      // build browserInstance
+      const browserInstance = await common.launchBrowserInstance();
+      // crawl cate
+      const category = await crawler.Category(browserInstance, dataReq.storeId);
+      // Make sure all pages will close
+      const pages = await browserInstance.pages();
+      await Promise.all(pages.map((page) => page.close()));
+      await browserInstance.close();
+      // res data
       if (category && category.length > 0) {
         actionResponse.getCategoryCrawled(category, dataReq.storeId);
       } else {
