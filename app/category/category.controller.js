@@ -25,7 +25,7 @@ const dbController = {
       const actionResponse = new ActionResponse(res);
       const { body: dataReq } = req;
       const category = dataReq.data;
-      if (category && category.length > 0 && saveDB.addCategory(dataReq.storeName, category)) {
+      if (category && category.length > 0 && saveDB.addCategory(dataReq.storeName, category)){
         actionResponse.saveComplete(category, dataReq.storeName, dataReq.categoryId);
       } else {
         throw new APIError(config.crawler.errAddCategory, config.httpStatus.BadRequest, {

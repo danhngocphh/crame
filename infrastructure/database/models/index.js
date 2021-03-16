@@ -1,12 +1,12 @@
 const user = require('./user');
 const product = require('./product');
 const store = require('./store');
-const rootcategory = require('./rootcategory');
+const rootCategory = require('./rootcategory');
 
 
 module.exports = {
     user,
-    rootcategory,
+    rootCategory,
     product,
     store
 }

@@ -28,12 +28,19 @@ const rootcategory = new mongoose.Schema({
     // }],
     
     childCategory: [{
-        categoryId: Number,
         name: String,
         shopName: String,
-        url: String
+        url: String,
+        createdBy: String,
+        updatedBy: String
     }],
     description: {
+        type: String
+    },
+    createdBy:{
+        type: String
+    },
+    updatedBy:{
         type: String
     },
     isActive: {
