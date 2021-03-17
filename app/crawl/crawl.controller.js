@@ -29,7 +29,7 @@ const CrawlController = {
         });
       }
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   },
   callApiCategory: async (req, res, next) => {
@@ -56,7 +56,7 @@ const CrawlController = {
         });
       }
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   },
   crawlProduct: async (req, res, next) => {
@@ -77,7 +77,7 @@ const CrawlController = {
         });
       }
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   },
   crawlCategory: async (req, res, next) => {
@@ -101,7 +101,7 @@ const CrawlController = {
         });
       }
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   }
 };

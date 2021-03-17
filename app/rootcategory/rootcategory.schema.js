@@ -2,10 +2,22 @@ const Joi = require('joi');
 
 const dbSchema = {
     set: Joi.object({
-        items: Joi.array().required()
+        name: Joi.string().required(),
+        parent: Joi.string().required(),
+        description: Joi.string().required()
     }),
-    get: Joi.object({
-        items: Joi.array().required()
+    delete: Joi.object({
+        id: Joi.string().required()
+    }),
+    addChild: Joi.object({
+        idroot: Joi.string().required(),
+        name: Joi.string().required(),
+        shopName: Joi.string().required(),
+        url: Joi.string().required()
+    }),
+    deleteChild: Joi.object({
+        idRootCategory: Joi.string().required(),
+        idChildCategory: Joi.string().required()
     })
 };
 

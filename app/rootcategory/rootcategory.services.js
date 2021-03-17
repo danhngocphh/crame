@@ -1,8 +1,8 @@
 const { rootCategory: ModelRootCategory } = require('../../infrastructure/database/models');
 const ObjectID = require('mongodb').ObjectID;
 
-exports.add = (data) => {
-    const {name, parent, description,createdBy,updatedBy} = data;
+exports.add = async (data) => {
+    const { name, parent, description, createdBy, updatedBy } = data;
     const category = new ModelRootCategory(
         {
             name,
@@ -12,18 +12,18 @@ exports.add = (data) => {
             updatedBy
         }
     );
-    category.save(function (err) {
+    const add = await category.save(function (err) {
         if (err) {
             console.log(err);
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         }
-        return category;
+        return add;
     })
 };
 
-exports.addChild = (data) => {
-    const {id, name, shopName, url, createdBy,updatedBy} = data;
+exports.addChild = async (data) => {
+    const { idroot, name, shopName, url, createdBy, updatedBy } = data;
     const childCategory = {
         name,
         shopName,
@@ -31,18 +31,18 @@ exports.addChild = (data) => {
         createdBy,
         updatedBy
     };
-    ModelRootCategory.updateOne({ _id: id }, { $push: { childCategory: childCategory } }, (err, result) => {
+    const addChild = await ModelRootCategory.updateOne({ _id: idroot }, { $push: { childCategory: childCategory } }, (err, result) => {
         if (err) {
             console.log(err);
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
-            return false
+            return null
         }
-        return true
+        return addChild
     });
 };
 
 exports.deleteChild = (data) => {
-    const {idRootCategory, idChildCategory} = data;
+    const { idRootCategory, idChildCategory } = data;
     ModelRootCategory.updateOne({ _id: idRootCategory }, {
         $pull: {
             childCategory: { _id: idChildCategory }
@@ -57,16 +57,15 @@ exports.deleteChild = (data) => {
     });
 };
 
-exports.get = (data) => {
-    const {id} = data;
+exports.get = (id) => {
     const category = ModelRootCategory.findById(id, function (err, category) {
         if (err) return next(err);
     })
     return category;
 };
 
-exports.getListRoot = () => {
-    ModelRootCategory.find({parent: null}, function (err, categories) {
+exports.getListRoot = async () => {
+    ModelRootCategory.find({ parent: null }, function (err, categories) {
         var categoryMap = {};
         categories.forEach(function (category) {
             categoryMap[category._id] = category;
@@ -76,9 +75,8 @@ exports.getListRoot = () => {
     });
 };
 
-exports.getListParent = (data) => {
-    const {id} = data;
-    ModelRootCategory.find({parent: new ObjectID(id)}, function (err, categories) {
+exports.getListParent = async (id) => {
+    ModelRootCategory.find({ parent: new ObjectID(id) }, function (err, categories) {
         var categoryMap = {};
         categories.forEach(function (category) {
             categoryMap[category._id] = category;
@@ -88,20 +86,15 @@ exports.getListParent = (data) => {
     });
 };
 
-exports.getListChild = (data) => {  
-    const {id} = data;
-    ModelRootCategory.find({parent: new ObjectID(id)}, function (err, categories) {
-        var categoryMap = {};
-        categories.forEach(function (category) {
-            categoryMap[category._id] = category;
-        });
+exports.getListChild = async (id) => {
+    const category = await ModelRootCategory.findById(id, function (err, category) {
         if (err) return next(err);
-        return categoryMap;
-    });
+    })
+    return category.childCategory;
 };
 
 exports.update = (data) => {
-    const{
+    const {
         name,
         parent,
         description,
@@ -124,12 +117,12 @@ exports.update = (data) => {
 };
 
 exports.deleteItem = (data) => {
-    const{
+    const {
         id,
         updatedBy
     } = data;
 
-    const editRootCategory = ModelRootCategory.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy} }, function (err, category) {
+    const editRootCategory = ModelRootCategory.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy } }, function (err, category) {
         if (err) {
             console.log(err);
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));

@@ -1,21 +1,52 @@
 const { Router } = require('express');
 const rootCategoryController = require('./rootcategory.controller');
 const Middleware = require('../middlewares');
-const dbSchema = require('./rootcategory.schema');
+const rootCategorySchema = require('./rootcategory.schema');
 
 const route = Router();
 
+
+route.get('/listroot', rootCategoryController.getListRoot);
+
+route.get('/:id', rootCategoryController.get);
+
+route.get('/listparent/:id', rootCategoryController.getListParent);
+
+route.get('/listchild/:id', rootCategoryController.getListChild);
+
+route.post('/add',
+    Middleware.isValidate(rootCategorySchema.set),
+    rootCategoryController.add
+);
+
 route.post(
-    '/set',
-    Middleware.isValidate(dbSchema.set),
-    rootCategoryController.setList
+    '/addchild',
+    Middleware.isValidate(rootCategorySchema.addChild),
+    rootCategoryController.addChild
 );
 
-route.get(
-    '/get',
-    Middleware.isValidate(dbSchema.get),
-    rootCategoryController.getList
+route.put(
+    '/edit',
+    Middleware.isValidate(rootCategorySchema.set),
+    rootCategoryController.update
 );
 
+route.delete(
+    '/deletechild',
+    Middleware.isValidate(rootCategorySchema.deleteChild),
+    rootCategoryController.deleteChild
+);
+
+route.delete(
+    '/delete',
+    Middleware.isValidate(rootCategorySchema.delete),
+    rootCategoryController.deleteItem
+);
+
+route.delete(
+    '/remove',
+    Middleware.isValidate(rootCategorySchema.delete),
+    rootCategoryController.remove
+);
 
 module.exports = route;
