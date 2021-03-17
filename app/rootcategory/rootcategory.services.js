@@ -1,4 +1,4 @@
-const { rootCategory: ModelRootCategory } = require('../database/models');
+const { rootCategory: ModelRootCategory } = require('../../infrastructure/database/models');
 const ObjectID = require('mongodb').ObjectID;
 
 exports.add = (data) => {
@@ -76,7 +76,8 @@ exports.getListRoot = () => {
     });
 };
 
-exports.getListParent = (id) => {
+exports.getListParent = (data) => {
+    const {id} = data;
     ModelRootCategory.find({parent: new ObjectID(id)}, function (err, categories) {
         var categoryMap = {};
         categories.forEach(function (category) {
@@ -87,7 +88,8 @@ exports.getListParent = (id) => {
     });
 };
 
-exports.getListChild = (id) => {  
+exports.getListChild = (data) => {  
+    const {id} = data;
     ModelRootCategory.find({parent: new ObjectID(id)}, function (err, categories) {
         var categoryMap = {};
         categories.forEach(function (category) {

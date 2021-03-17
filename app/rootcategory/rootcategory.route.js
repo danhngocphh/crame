@@ -1,20 +1,20 @@
 const { Router } = require('express');
 const rootCategoryController = require('./rootcategory.controller');
 const Middleware = require('../middlewares');
-const dbSchema = require('./category.schema');
+const dbSchema = require('./rootcategory.schema');
 
 const route = Router();
 
 route.post(
     '/set',
-    Middleware.isValidate(dbSchema.category),
-    rootCategoryController.set
+    Middleware.isValidate(dbSchema.set),
+    rootCategoryController.setList
 );
 
-route.post(
-    '/add',
-    Middleware.isValidate(dbSchema.category),
-    rootCategoryController.add
+route.get(
+    '/get',
+    Middleware.isValidate(dbSchema.get),
+    rootCategoryController.getList
 );
 
 

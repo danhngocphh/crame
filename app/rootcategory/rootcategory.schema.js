@@ -1,9 +1,11 @@
 const Joi = require('joi');
 
 const dbSchema = {
-    category: Joi.object({
-        storeName: Joi.string().required(),
-        data: Joi.array().required()
+    set: Joi.object({
+        items: Joi.array().required()
+    }),
+    get: Joi.object({
+        items: Joi.array().required()
     })
 };
 
