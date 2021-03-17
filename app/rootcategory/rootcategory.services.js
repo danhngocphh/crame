@@ -31,7 +31,7 @@ exports.addChild = (data) => {
         createdBy,
         updatedBy
     };
-    await ModelRootCategory.updateOne({ _id: id }, { $push: { childCategory: childCategory } }, (err, result) => {
+    ModelRootCategory.updateOne({ _id: id }, { $push: { childCategory: childCategory } }, (err, result) => {
         if (err) {
             console.log(err);
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
@@ -43,7 +43,7 @@ exports.addChild = (data) => {
 
 exports.deleteChild = (data) => {
     const {idRootCategory, idChildCategory} = data;
-    await ModelRootCategory.updateOne({ _id: idRootCategory }, {
+    ModelRootCategory.updateOne({ _id: idRootCategory }, {
         $pull: {
             childCategory: { _id: idChildCategory }
         }

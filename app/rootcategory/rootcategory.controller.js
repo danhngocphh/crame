@@ -1,5 +1,4 @@
 const { ActionResponse, APIError } = require('../../helpers');
-const { saveDB } = require('../../infrastructure/services');
 const _ = require('lodash');
 const config = require('../../config');
 const { rootCategoryService } = require('./rootcategory.services');
