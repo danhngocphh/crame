@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const toJson = require('@meanie/mongoose-to-json');
+mongoose.plugin(toJson);
 const config = require('../../config');
 const logger = require('../logger');
 

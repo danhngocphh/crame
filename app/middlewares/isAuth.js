@@ -18,9 +18,8 @@ const isAuth = async (req, res, next) => {
   try {
     const token = getTokenFromHeader(req);
     const { id } = await jwtService.verifyAccessToken(token);
-    const currentUser = await userModel.findById(id).lean();
+    const currentUser = await userModel.findById(id);
     if(!currentUser.isConfirmed) next(new APIError("The user is not confirmed."), config.httpStatus.BadRequest);
-    Reflect.deleteProperty(currentUser, 'password');
     req.currentUser = currentUser;
     next();
   } catch (error) {

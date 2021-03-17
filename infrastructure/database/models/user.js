@@ -22,7 +22,7 @@ const user = new mongoose.Schema({
       message: props => `${props.value} is not a valid phone number!`
     },
   },
-  avatarUrl : String,
+  avatarPublicId : String,
   birthday: Date,
   address: String,
   password: {

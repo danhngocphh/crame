@@ -128,7 +128,7 @@ const AuthController = {
           },
           { new: true }
         ).exec()
-      ).toObject();
+      ).toJSON();
       actionResponse.createdDataSuccess({ ...result });
     } catch (error) {
       next(error);
@@ -188,6 +188,7 @@ const AuthController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { body: userReq } = req;
+      logger.debug("%o", userReq);
       const hashedPassword = await bcrypt.hash(userReq.password, saltRounds);
       const { id } = await jwtService.verifyEmailToken(userReq.emailToken);
       const { password, ...result } = (
@@ -198,7 +199,7 @@ const AuthController = {
           },
           { new: true }
         ).exec()
-      ).toObject();
+      ).toJSON();
       actionResponse.createdDataSuccess({ ...result });
     } catch (error) {
       next(error);

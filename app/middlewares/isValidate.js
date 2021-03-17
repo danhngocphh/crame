@@ -7,7 +7,6 @@ const isValidate = (schema, property = 'body') => (req, res, next) => {
   if(!req[property]) next(new APIError('Invalid property of request', config.httpStatus.BadRequest));
   const { error } = schema.validate(req[property], { abortEarly: false });
   if (error) {
-    logger.debug(`[Debug] Validate joi %o`,error.details);
     const details = _.reduce(
       error.details,
       (acc, { message, path }) => ({

@@ -110,7 +110,7 @@ exports.verifyEmailToken = (token) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, tokenConfig.email_secret, (err, payload) => {
       if (err)
-        reject(new APIError(err.message, config.httpStatus.BadRequest));
+        reject(new APIError('Liên kết không hợp lệ', config.httpStatus.BadRequest));
       resolve(payload);
     });
   });
