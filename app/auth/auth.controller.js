@@ -56,8 +56,8 @@ const AuthController = {
       const { body: userReq } = req;
       const hashedPassword = await bcrypt.hash(userReq.password, saltRounds);
       const userFound = await UserModel.findOne({ email: userReq.email });
-      if (userFound != null || userReq.email == config.email.user)
-        throw new APIError('User already exist', config.httpStatus.BadRequest, {
+      if (userFound != null || userReq.email === config.email.user)
+        throw new APIError('User already exists', config.httpStatus.BadRequest, {
           email: `${userReq.email} is existed. Try another email`,
         });
       const userCreated = new UserModel({

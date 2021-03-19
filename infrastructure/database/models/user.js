@@ -1,9 +1,15 @@
 const mongoose = require('mongoose');
-const { regex } = require('../../../config');
-const { role } = require('../enum');
+const { regex, email: emailConfig } = require('../../../config');
+const { roleEnum } = require('../enum');
 
 const user = new mongoose.Schema({
   name: {
+    full: {
+      type: String,
+      default: function () {
+        return `${this.name.first} ${this.name.last}`
+      }
+    },
     first: String,
     last: String,
   },
@@ -12,6 +18,12 @@ const user = new mongoose.Schema({
     required: true,
     lowercase: true,
     unique: true,
+    validate: {
+      validator: function(v) {
+        return v !== emailConfig.user;
+      },
+      message: props => `${props.value} is not a valid!`
+    }
   },
   phoneNumber: {
     type: String,
@@ -31,12 +43,16 @@ const user = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: [role.admin, role.customer],
-    default: role.customer
+    enum: [roleEnum.admin, roleEnum.customer],
+    default: roleEnum.customer
   },
   isConfirmed: {
     type: Boolean,
     default: false,
+  },
+  hasChangePassword: {
+    type: Boolean,
+    default: true,
   }
 });
 

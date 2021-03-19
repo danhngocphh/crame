@@ -1,4 +1,4 @@
-exports.role = {
+exports.roleEnum = {
     admin: "admin",
     customer: "customer"
 }

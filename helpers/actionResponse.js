@@ -1,3 +1,4 @@
+const _ = require('lodash');
 class ActionResponse {
   constructor(res) {
     this.res = res;
@@ -12,10 +13,21 @@ class ActionResponse {
     });
   }
 
+  getPaginateDataSuccess(data, { totalDocs, totalPages, page }) {
+    return this.res.status(200).json({
+      success: true,
+      title: this.title,
+      data,
+      total : totalDocs,
+      currentPage : page,
+      totalPages,
+    });
+  }
+
   getDataCrawled(data, shopName, categoryId) {
     return this.res.status(200).json({
       success: true,
-      msg: "Crawled: " + shopName +"_" +categoryId,
+      msg: 'Crawled: ' + shopName + '_' + categoryId,
       data,
     });
   }
@@ -23,7 +35,7 @@ class ActionResponse {
   getCategoryCrawled(data, shopName) {
     return this.res.status(200).json({
       success: true,
-      msg: "Crawled List Category : " + shopName,
+      msg: 'Crawled List Category : ' + shopName,
       data,
     });
   }
@@ -35,11 +47,11 @@ class ActionResponse {
       data,
     });
   }
-  
+
   saveComplete(data) {
     return this.res.status(200).json({
       success: true,
-      msg: "Save complete!",
+      msg: 'Save complete!',
       data,
     });
   }

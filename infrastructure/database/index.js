@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
-const toJson = require('@meanie/mongoose-to-json');
-mongoose.plugin(toJson);
 const config = require('../../config');
 const logger = require('../logger');
 
-require('./models');
-
 const loadMongoDb = async () => {
+  require('./plugins')(mongoose);
   const uri = config.database.uri;
   try {
     const { connection } = await mongoose.connect(uri, {
