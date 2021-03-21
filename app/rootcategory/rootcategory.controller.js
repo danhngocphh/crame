@@ -118,10 +118,10 @@ const rootCategoryController = {
   deleteChild: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { body: dataReq } = req;
-      const list =list
+      const { params } = req;
+      const list = await rootCategoryService.deleteChild(params);
       if (list) {
-        return actionResponse.getDataSuccess({ ...dataReq});
+        return actionResponse.getDataSuccess({ ...params});
       } else {
         throw new APIError('Cant delete child category', config.httpStatus.BadRequest, {
           msg: "Fail to delete child category. Check your database, pls!"
@@ -134,8 +134,8 @@ const rootCategoryController = {
   remove: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { currentUser, body: dataReq } = req;
-      const list =await rootCategoryService.remove({ ...dataReq, updatedBy: currentUser.id });
+      const { currentUser, params } = req;
+      const list =await rootCategoryService.remove({ ...params, updatedBy: currentUser.id });
       if (list) {
         return actionResponse.getDataSuccess({ ...dataReq});
       } else {
@@ -150,8 +150,8 @@ const rootCategoryController = {
   deleteItem: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { currentUser, body: dataReq } = req;
-      const list =await rootCategoryService.deleteItem({ ...item, updatedBy: currentUser.id });
+      const { currentUser, params } = req;
+      const list =await rootCategoryService.deleteItem({ ...params, updatedBy: currentUser.id });
       if (list) {
         return actionResponse.getDataSuccess({ ...dataReq});
       } else {
