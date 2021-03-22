@@ -10,7 +10,7 @@ const dbSchema = {
         id: Joi.string().required()
     }),
     addChild: Joi.object({
-        idroot: Joi.string().required(),
+        idRoot: Joi.string().required(),
         name: Joi.string().required(),
         shopName: Joi.string().required(),
         url: Joi.string().required()

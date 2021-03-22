@@ -18,12 +18,12 @@ exports.add = async (data) => {
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         }
-        return add;
     })
+    return add;
 };
 
 exports.addChild = async (data) => {
-    const { idroot, name, shopName, url, createdBy, updatedBy } = data;
+    const { idRoot, name, shopName, url, createdBy, updatedBy } = data;
     const childCategory = {
         name,
         shopName,
@@ -31,14 +31,14 @@ exports.addChild = async (data) => {
         createdBy,
         updatedBy
     };
-    const addChild = await ModelRootCategory.updateOne({ _id: idroot }, { $push: { childCategory: childCategory } }, (err, result) => {
+    const addChild = await ModelRootCategory.updateOne({ _id: idRoot }, { $push: { childCategory: childCategory } }, (err, result) => {
         if (err) {
             console.log(err);
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         }
-        return addChild
     });
+    return addChild
 };
 
 exports.deleteChild = (data) => {
@@ -112,8 +112,8 @@ exports.update = (data) => {
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         };
-        return editRootCategory;
     });
+    return editRootCategory;
 };
 
 exports.deleteItem = (data) => {
@@ -122,14 +122,14 @@ exports.deleteItem = (data) => {
         updatedBy
     } = data;
 
-    const editRootCategory = ModelRootCategory.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy } }, function (err, category) {
+    const delRootCategory = ModelRootCategory.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy } }, function (err, category) {
         if (err) {
             console.log(err);
             res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         };
-        return editRootCategory;
     });
+    return delRootCategory;
 };
 
 exports.remove = (data) => {

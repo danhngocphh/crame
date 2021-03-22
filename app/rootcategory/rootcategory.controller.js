@@ -1,7 +1,7 @@
 const { ActionResponse, APIError } = require('../../helpers');
 const _ = require('lodash');
 const config = require('../../config');
-const { rootCategoryService } = require('./rootcategory.services');
+const rootCategoryService = require('./rootcategory.services');
 
 const rootCategoryController = {
   getListRoot: async (req, res, next) => {

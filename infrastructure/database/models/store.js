@@ -32,7 +32,6 @@ const store = new mongoose.Schema({
     headers: {
         type: Object,
         required: true
-
     },
     params: {
         type: Object,
@@ -64,6 +63,12 @@ const store = new mongoose.Schema({
         name: { type: String,  trim: true },
         detail: { type: String,  trim: true },
         price: { type: String,  trim: true }
+    },
+    createdBy:{
+        type: String
+    },
+    updatedBy:{
+        type: String
     },
     isActive: {
         type: Boolean,
