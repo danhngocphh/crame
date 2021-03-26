@@ -12,10 +12,17 @@ const UserService = {
     upload.single('avatar')(req, res, async (error) => {
       try {
         if (error) return next(error);
-        if (req.file)
-          req.body.avatarPublicId = (
-            await imageService.upload(req.file.originalname, req.file.buffer)
-          ).public_id;
+        const { currentUser, file } = req;
+        if (file) {
+          const [{ public_id: publicId, url }] = await Promise.all([
+            await imageService.upload(file.originalname, file.buffer),
+            await imageService.deleteResourceById(
+              _.get(currentUser, 'avatar.publicId')
+            ),
+          ]);
+          req.body.avatar = { publicId, url };
+          console.log(req.avatar);
+        }
         next();
       } catch (err) {
         next(err);
@@ -25,11 +32,8 @@ const UserService = {
   toJson: async (data) => {
     const transform = async (record) => {
       const JsonData = record.toJSON();
-      const avatarUrl = (
-        await imageService.getResourceById(JsonData.avatarPublicId)
-      ).url;
-      _.set(JsonData, 'avatarUrl', avatarUrl);
-      Reflect.deleteProperty(JsonData, 'avatarPublicId');
+      JsonData.avatarUrl = _.get(JsonData, 'avatar.url');
+      Reflect.deleteProperty(JsonData, 'avatar');
       Reflect.deleteProperty(JsonData, 'password');
       return JsonData;
     };

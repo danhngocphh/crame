@@ -24,11 +24,9 @@ const UserController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { currentUser, body: updateReq } = req;
-      if (updateReq.avatarPublicId)
-        await imageService.deleteResourceById(currentUser.avatarPublicId);
       const updatedUser = await UserModel.findByIdAndUpdate(
         currentUser.id,
-        updateReq,
+        { ...updateReq },
         {
           new: true,
           runValidators: true,
@@ -75,18 +73,22 @@ const UserController = {
         email: qEmail,
         phoneNumber: qPhoneNumber,
         fullName: qFullName,
+        role: qRole,
       } = req.query;
+      console.log(req.paginateOptions)
       const { docs: userRecords, ...rest } = await UserModel.paginate(
         {
           $and: [
             qEmail ? { email: { $regex: qEmail } } : {},
             qPhoneNumber ? { phoneNumber: { $regex: qPhoneNumber } } : {},
             qFullName ? { 'name.full': { $regex: qFullName } } : {},
+            qRole ? { role: qRole } : {},
           ],
         },
         req.paginateOptions
       );
       const userJson = await UserService.toJson(userRecords);
+
       return actionResponse.getPaginateDataSuccess(userJson, rest);
     } catch (error) {
       next(error);
@@ -109,8 +111,7 @@ const UserController = {
       const newUser = new UserModel({
         ...createReq,
         password: await bcrypt.hash(createReq.password, saltRounds),
-        isConfirm: true,
-        hasChangePassword: false,
+        isConfirmed: true,
       });
       await newUser.save();
       return actionResponse.getDataSuccess({ userId: newUser.id });
@@ -130,9 +131,10 @@ const UserController = {
   },
   deleteOne: async (req, res, next) => {
     try {
-      const { body: createReq } = req;
+      const { user } = req;
       const actionResponse = new ActionResponse(res);
-      return actionResponse.getDataSuccess('On progress');
+      await UserModel.findByIdAndRemove(user.id);
+      return actionResponse.getDataSuccess();
     } catch (error) {
       next(error);
     }
