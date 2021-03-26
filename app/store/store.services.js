@@ -48,6 +48,27 @@ exports.get = (id) => {
     return store;
 };
 
+exports.getListPaging = async (data) => {
+    const {
+        page = 0, itemsPerPage = 10
+    } = data;
+    let offset,limit;
+    if (page > 0 && itemsPerPage > 0) {
+        offset = 0 + (page - 1) * itemsPerPage;
+        limit = itemsPerPage;
+    }
+    ModelStore.find({ parent: null }, function (err, stores) {
+        var storeMap = {};
+        stores.forEach(function (store) {
+            storeMap[store._id] = store;
+        });
+        if (err) return next(err);
+        return storeMap;
+    })
+        .skip(offset)
+        .limit(limit);
+};
+
 exports.update = (data) => {
     const {
         name,

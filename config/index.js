@@ -20,7 +20,7 @@ module.exports = {
   cronjobs: {
     collection: process.env.DB_COLLECTION,
     pooltime: process.env.POOL_TIME,
-    concurrency: process.env.concurrency,
+    concurrency: process.env.CONCURRENCY,
   },
   token: {
     access_secret: process.env.ACCESS_TOKEN_SECRET,

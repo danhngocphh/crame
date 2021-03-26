@@ -4,10 +4,10 @@ const config = require('../../config');
 const rootCategoryService = require('./rootcategory.services');
 
 const rootCategoryController = {
-  getListRoot: async (req, res, next) => {
+  getListRootPaging: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const list = await rootCategoryService.getListRoot();
+      const list = await rootCategoryService.getListRootPaging(req.params);
       if (list) {
         return actionResponse.getDataSuccess({ ...list});
       } else {
@@ -19,11 +19,11 @@ const rootCategoryController = {
       next(error);
     }
   },
-  get: async (req, res, next) => {
+  getById: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
       const { params } = req;
-      const list = await rootCategoryService.get(params.id)
+      const list = await rootCategoryService.getById(params.id)
       if (list) {
         return actionResponse.getDataSuccess({ ...list});
       } else {
@@ -35,11 +35,11 @@ const rootCategoryController = {
       next(error);
     }
   },
-  getListParent: async (req, res, next) => {
+  getListParentPaging: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
       const { params } = req;
-      const list = await rootCategoryService.getListParent(params.id)
+      const list = await rootCategoryService.getListParentPaging(params)
       if (list) {
         return actionResponse.getDataSuccess({ ...list});
       } else {

@@ -20,6 +20,22 @@ const storeController = {
       next(error);
     }
   },
+  getListPaging: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const { params } = req;
+      const list = await storeService.getListPaging(params)
+      if (list) {
+        return actionResponse.getDataSuccess({ ...list});
+      } else {
+        throw new APIError('Cant get data', config.httpStatus.BadRequest, {
+          msg: "Fail to get store. Check rootcategory Id, pls!"
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
   add: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);

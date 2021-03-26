@@ -11,6 +11,10 @@ const route = Router();
 // route.get('/all', rootCategoryController.getAll);
 
 route   
+    .route('/list')
+    .get(storeController.getListPaging)
+
+route   
     .route('/:id')
     .get(storeController.get)
     .delete(

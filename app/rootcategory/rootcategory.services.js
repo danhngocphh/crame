@@ -57,14 +57,22 @@ exports.deleteChild = (data) => {
     });
 };
 
-exports.get = (id) => {
-    const category = ModelRootCategory.findById(id, function (err, category) {
+exports.getById = (id) => {
+    const rootCategory = ModelRootCategory.findById(id, function (err, category) {
         if (err) return next(err);
     })
-    return category;
+    return rootCategory;
 };
 
-exports.getListRoot = async () => {
+exports.getListRootPaging = async (data) => {
+    const {
+        page = 0, itemsPerPage = 10
+    } = data;
+    let offset,limit;
+    if (page > 0 && itemsPerPage > 0) {
+        offset = 0 + (page - 1) * itemsPerPage;
+        limit = itemsPerPage;
+    }
     ModelRootCategory.find({ parent: null }, function (err, categories) {
         var categoryMap = {};
         categories.forEach(function (category) {
@@ -72,10 +80,20 @@ exports.getListRoot = async () => {
         });
         if (err) return next(err);
         return categoryMap;
-    });
+    })
+        .skip(offset)
+        .limit(limit);
 };
 
-exports.getListParent = async (id) => {
+exports.getListParentPaging = async (data) => {
+    const {
+        page = 0, itemsPerPage = 10, id
+    } = data;
+    let offset,limit;
+    if (page > 0 && itemsPerPage > 0) {
+        offset = 0 + (page - 1) * itemsPerPage;
+        limit = itemsPerPage;
+    }
     ModelRootCategory.find({ parent: new ObjectID(id) }, function (err, categories) {
         var categoryMap = {};
         categories.forEach(function (category) {
@@ -83,7 +101,9 @@ exports.getListParent = async (id) => {
         });
         if (err) return next(err);
         return categoryMap;
-    });
+    })
+        .skip(offset)
+        .limit(limit);
 };
 
 exports.getListChild = async (id) => {

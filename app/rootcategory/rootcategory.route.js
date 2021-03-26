@@ -8,7 +8,7 @@ const route = Router();
 route.all('*', Middleware.isAuth);
 /* Handle current user */
 
-route.get('/list-root', rootCategoryController.getListRoot);
+route.get('/list-root', rootCategoryController.getListRootPaging);
 
 route
     .route('/')
@@ -23,10 +23,10 @@ route
 
 route
     .route('/:id')
-    .get(rootCategoryController.get)
+    .get (rootCategoryController.getById)
     .delete(rootCategoryController.deleteItem)
 
-route.get('/list-parent/:id', rootCategoryController.getListParent);
+route.get('/list-parent/:id', rootCategoryController.getListParentPaging);
 
 route.get('/list-child/:id', rootCategoryController.getListChild);
 
