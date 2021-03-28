@@ -69,10 +69,6 @@ const AuthController = {
         jwtService.genEmailToken(userCreated),
         userCreated.save(),
       ]);
-      await emailService.sendMailConfirmUser({
-        email: userCreated.email,
-        emailToken,
-      });
       actionResponse.createdDataSuccess({
         emailToken,
         userId: userCreated.id,

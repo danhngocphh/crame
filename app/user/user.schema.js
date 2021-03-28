@@ -15,7 +15,7 @@ const UserSchema = {
     }),
     birthday: Joi.date().required(),
     address: Joi.string().required(),
-    avatarPublicId: Joi.string(),
+    avatar: Joi.any(),
   }),
   changeMyPasswordPUT: Joi.object({
     oldPassword: Joi.string().min(6).required(),
