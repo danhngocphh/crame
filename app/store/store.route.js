@@ -8,17 +8,11 @@ const route = Router();
 // route.all('*', Middleware.isAuth);
 /* Handle current user */
 
-// route.get('/all', rootCategoryController.getAll);
-
-route   
-    .route('/list')
-    .get(storeController.getListPaging)
-
-route   
+route
     .route('/:id')
-    .get(storeController.get)
+    .get(storeController.getById)
     .delete(
-        storeController.deleteItem
+        storeController.remove
     );
 
 route
@@ -27,14 +21,10 @@ route
         Middleware.isValidate(storeSchema.set),
         storeController.add
     )
+    .get(storeController.getListPaging)
     .put(
         Middleware.isValidate(storeSchema.set),
-        storeController.update      
+        storeController.update
     );
-
-route.delete(
-    '/remove/:id',
-    storeController.remove
-);
 
 module.exports = route;

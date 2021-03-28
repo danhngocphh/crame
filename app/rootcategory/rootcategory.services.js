@@ -1,5 +1,6 @@
-const { rootCategory: ModelRootCategory } = require('../../infrastructure/database/models');
+var { rootCategory: ModelRootCategory } = require('../../infrastructure/database/models');
 const ObjectID = require('mongodb').ObjectID;
+
 
 exports.add = async (data) => {
     const { name, parent, description, createdBy, updatedBy } = data;
@@ -64,53 +65,45 @@ exports.getById = (id) => {
     return rootCategory;
 };
 
-exports.getListRootPaging = async (data) => {
-    const {
-        page = 0, itemsPerPage = 10
-    } = data;
-    let offset,limit;
-    if (page > 0 && itemsPerPage > 0) {
-        offset = 0 + (page - 1) * itemsPerPage;
-        limit = itemsPerPage;
+
+exports.getListPaging = async (data) => {
+    try {
+        const {
+            parent: qParent,
+            name: qName,
+            paginateOptions
+        } = data;
+        const { docs: rootCategoryRecords, ...rest } = await ModelRootCategory.paginate(
+            {
+                $and: [
+                    qParent ? { parent: new ObjectID(qParent) } : {},
+                    qName ? { name: qName } : {},
+                    { isActive: true }
+                ],
+            },
+            paginateOptions
+        );
+        const rootCategoryJson = rootCategoryRecords.toJson();
+        return { rootCategoryJson, rest };
+    } catch (error) {
+        next(error);
     }
-    ModelRootCategory.find({ parent: null }, function (err, categories) {
-        var categoryMap = {};
-        categories.forEach(function (category) {
-            categoryMap[category._id] = category;
-        });
-        if (err) return next(err);
-        return categoryMap;
-    })
-        .skip(offset)
-        .limit(limit);
 };
 
-exports.getListParentPaging = async (data) => {
-    const {
-        page = 0, itemsPerPage = 10, id
-    } = data;
-    let offset,limit;
-    if (page > 0 && itemsPerPage > 0) {
-        offset = 0 + (page - 1) * itemsPerPage;
-        limit = itemsPerPage;
-    }
-    ModelRootCategory.find({ parent: new ObjectID(id) }, function (err, categories) {
-        var categoryMap = {};
-        categories.forEach(function (category) {
-            categoryMap[category._id] = category;
+exports.megaMenu = async () => {
+    try {
+        const a = await ModelRootCategory
+        .find({isActive: true, isRoot: true}).populate({
+            
+            // Get friends of friends - populate the 'friends' array for every friend
+            populate: [{ path: 'parent' }],
+            path: 'parent',
         });
-        if (err) return next(err);
-        return categoryMap;
-    })
-        .skip(offset)
-        .limit(limit);
-};
 
-exports.getListChild = async (id) => {
-    const category = await ModelRootCategory.findById(id, function (err, category) {
-        if (err) return next(err);
-    })
-    return category.childCategory;
+        return a;
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 exports.update = (data) => {
@@ -163,4 +156,9 @@ exports.remove = (data) => {
         return true;
     })
 };
+
+function autoPopulateSubs(next) {
+    this.populate('parent');
+    next();
+}
 

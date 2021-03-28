@@ -5,31 +5,31 @@ const rootCategorySchema = require('./rootcategory.schema');
 
 const route = Router();
 
-route.all('*', Middleware.isAuth);
+// route.all('*', Middleware.isAuth);
 /* Handle current user */
 
-route.get('/list-root', rootCategoryController.getListRootPaging);
+route.get(
+    '/mega-menu',
+    rootCategoryController.megaMenu
+);
+
 
 route
     .route('/')
+    .get(rootCategoryController.getListPaging)
     .post(
         Middleware.isValidate(rootCategorySchema.set),
         rootCategoryController.add
     )
+
+route
+    .route('/:id')
+    .get(rootCategoryController.getById)
+    .delete(rootCategoryController.deleteItem)
     .put(
         Middleware.isValidate(rootCategorySchema.set),
         rootCategoryController.update
     )
-
-route
-    .route('/:id')
-    .get (rootCategoryController.getById)
-    .delete(rootCategoryController.deleteItem)
-
-route.get('/list-parent/:id', rootCategoryController.getListParentPaging);
-
-route.get('/list-child/:id', rootCategoryController.getListChild);
-
 
 route.post(
     '/child',

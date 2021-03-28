@@ -41,7 +41,7 @@ exports.add = async (data) => {
     return add;
 };
 
-exports.get = (id) => {
+exports.getById = (id) => {
     const store = ModelStore.findById(id, function (err, category) {
         if (err) return next(err);
     }).exec()
@@ -49,24 +49,25 @@ exports.get = (id) => {
 };
 
 exports.getListPaging = async (data) => {
-    const {
-        page = 0, itemsPerPage = 10
-    } = data;
-    let offset,limit;
-    if (page > 0 && itemsPerPage > 0) {
-        offset = 0 + (page - 1) * itemsPerPage;
-        limit = itemsPerPage;
+    try {
+        const {
+            name: qName,
+            paginateOptions
+        } = data;
+        const { docs: storeRecords, ...rest } = await ModelStore.paginate(
+            {
+                $and: [
+                    qName ? { name:  qName } : {},
+                    { isActive: true } 
+                ],
+            },
+            paginateOptions
+        );
+        const storeJson = storeRecords.toJson();
+        return { storeJson, rest };
+    } catch (error) {
+        next(error);
     }
-    ModelStore.find({ parent: null }, function (err, stores) {
-        var storeMap = {};
-        stores.forEach(function (store) {
-            storeMap[store._id] = store;
-        });
-        if (err) return next(err);
-        return storeMap;
-    })
-        .skip(offset)
-        .limit(limit);
 };
 
 exports.update = (data) => {
@@ -108,23 +109,7 @@ exports.update = (data) => {
     return editStore;
 };
 
-exports.deleteItem = async (data) => {
-    const {
-        id,
-        updatedBy
-    } = data;
-
-    const delStore = ModelStore.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy } }, function (err, category) {
-        if (err) {
-            console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
-            return null
-        };
-    });
-    return delStore;
-};
-
-exports.remove = (data) => {
+exports.remove = async (data) => {
     const { id } = data;
     ModelStore.findByIdAndRemove(id, function (err) {
         if (err) {

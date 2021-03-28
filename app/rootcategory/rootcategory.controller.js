@@ -4,28 +4,13 @@ const config = require('../../config');
 const rootCategoryService = require('./rootcategory.services');
 
 const rootCategoryController = {
-  getListRootPaging: async (req, res, next) => {
-    try {
-      const actionResponse = new ActionResponse(res);
-      const list = await rootCategoryService.getListRootPaging(req.params);
-      if (list) {
-        return actionResponse.getDataSuccess({ ...list});
-      } else {
-        throw new APIError('Cant get list root', config.httpStatus.BadRequest, {
-          msg: "Fail to get list rootcategory, check your database!",
-        });
-      }
-    } catch (error) {
-      next(error);
-    }
-  },
   getById: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
       const { params } = req;
       const list = await rootCategoryService.getById(params.id)
       if (list) {
-        return actionResponse.getDataSuccess({ ...list});
+        return actionResponse.getDataSuccess({ ...list });
       } else {
         throw new APIError('Cant get data', config.httpStatus.BadRequest, {
           msg: "Fail to get rootcategory. Check rootcategory Id, pls!"
@@ -35,34 +20,21 @@ const rootCategoryController = {
       next(error);
     }
   },
-  getListParentPaging: async (req, res, next) => {
+  getListPaging: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { params } = req;
-      const list = await rootCategoryService.getListParentPaging(params)
-      if (list) {
-        return actionResponse.getDataSuccess({ ...list});
-      } else {
-        throw new APIError('Cant get list parent', config.httpStatus.BadRequest, {
-          msg: "Fail to get list parent. Check parent Id, pls!"
-        });
-      }
+      const { query, paginateOptions } = req;
+      const { rootCategoryJson, rest } = await rootCategoryService.getListPaging({ ...query, paginateOptions })
+      return actionResponse.getPaginateDataSuccess(rootCategoryJson, rest);
     } catch (error) {
       next(error);
     }
   },
-  getListChild: async (req, res, next) => {
+  megaMenu: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { params } = req;
-      const list = await rootCategoryService.getListChild(params.id)
-      if (list) {
-        return actionResponse.getDataSuccess({ ...list});
-      } else {
-        throw new APIError('Cant get list child', config.httpStatus.BadRequest, {
-          msg: "Fail to get list child. Check child Id, pls!"
-        });
-      }
+      const rootCategoryJson  = await rootCategoryService.megaMenu()
+      return actionResponse.getDataSuccess(rootCategoryJson);
     } catch (error) {
       next(error);
     }
@@ -73,7 +45,7 @@ const rootCategoryController = {
       const { currentUser, body: dataReq } = req;
       const list = await rootCategoryService.add({ ...dataReq, createdBy: currentUser.id, updatedBy: currentUser.id })
       if (list) {
-        return actionResponse.getDataSuccess({ ...list});
+        return actionResponse.getDataSuccess({ ...list });
       } else {
         throw new APIError('Cant add rootcategory', config.httpStatus.BadRequest, {
           msg: "Fail to add rootcategory. Check your database, pls!"
@@ -89,7 +61,7 @@ const rootCategoryController = {
       const { currentUser, body: dataReq } = req;
       const list = await rootCategoryService.addChild({ ...dataReq, createdBy: currentUser.id, updatedBy: currentUser.id })
       if (list) {
-        return actionResponse.getDataSuccess({ ...list});
+        return actionResponse.getDataSuccess({ ...list });
       } else {
         throw new APIError('Cant add child category', config.httpStatus.BadRequest, {
           msg: "Fail to add child category. Check your database, pls!"
@@ -105,7 +77,7 @@ const rootCategoryController = {
       const { currentUser, body: dataReq } = req;
       const list = await rootCategoryService.update({ ...dataReq, updatedBy: currentUser.id })
       if (list) {
-        return actionResponse.getDataSuccess({ ...list});
+        return actionResponse.getDataSuccess({ ...list });
       } else {
         throw new APIError('Cant update rootcategory', config.httpStatus.BadRequest, {
           msg: "Fail to update rootcategory. Check your database, pls!"
@@ -121,7 +93,7 @@ const rootCategoryController = {
       const { params } = req;
       const list = await rootCategoryService.deleteChild(params);
       if (list) {
-        return actionResponse.getDataSuccess({ ...params});
+        return actionResponse.getDataSuccess({ ...params });
       } else {
         throw new APIError('Cant delete child category', config.httpStatus.BadRequest, {
           msg: "Fail to delete child category. Check your database, pls!"
@@ -135,9 +107,9 @@ const rootCategoryController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { currentUser, params } = req;
-      const list =await rootCategoryService.remove({ ...params, updatedBy: currentUser.id });
+      const list = await rootCategoryService.remove({ ...params, updatedBy: currentUser.id });
       if (list) {
-        return actionResponse.getDataSuccess({ ...dataReq});
+        return actionResponse.getDataSuccess({ ...dataReq });
       } else {
         throw new APIError('Cant remove category', config.httpStatus.BadRequest, {
           msg: "Fail to remove category. Check your database, pls!"
@@ -151,9 +123,9 @@ const rootCategoryController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { currentUser, params } = req;
-      const list =await rootCategoryService.deleteItem({ ...params, updatedBy: currentUser.id });
+      const list = await rootCategoryService.deleteItem({ ...params, updatedBy: currentUser.id });
       if (list) {
-        return actionResponse.getDataSuccess({ ...dataReq});
+        return actionResponse.getDataSuccess({ ...dataReq });
       } else {
         throw new APIError('Cant delete category', config.httpStatus.BadRequest, {
           msg: "Fail to delete category. Check your database, pls!"
