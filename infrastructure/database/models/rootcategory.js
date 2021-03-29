@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 let rootcategory = new mongoose.Schema({
     // men_FS
@@ -38,10 +37,5 @@ let rootcategory = new mongoose.Schema({
         default: true
     }
 });
-
-rootcategory.plugin(deepPopulate)
-
-
-
 
 module.exports = mongoose.model('rootcategories', rootcategory);

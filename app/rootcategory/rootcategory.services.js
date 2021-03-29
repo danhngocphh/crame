@@ -1,6 +1,6 @@
 var { rootCategory: ModelRootCategory } = require('../../infrastructure/database/models');
 const ObjectID = require('mongodb').ObjectID;
-
+const logger = require('../../infrastructure/logger');
 
 exports.add = async (data) => {
     const { name, parent, description, createdBy, updatedBy } = data;
@@ -15,8 +15,6 @@ exports.add = async (data) => {
     );
     const add = await category.save(function (err) {
         if (err) {
-            console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         }
     })
@@ -34,8 +32,6 @@ exports.addChild = async (data) => {
     };
     const addChild = await ModelRootCategory.updateOne({ _id: idRoot }, { $push: { childCategory: childCategory } }, (err, result) => {
         if (err) {
-            console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         }
     });
@@ -50,8 +46,6 @@ exports.deleteChild = (data) => {
         }
     }, (err, result) => {
         if (err) {
-            console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return false
         }
         return true
@@ -60,7 +54,7 @@ exports.deleteChild = (data) => {
 
 exports.getById = (id) => {
     const rootCategory = ModelRootCategory.findById(id, function (err, category) {
-        if (err) return next(err);
+        if (err) return null;
     })
     return rootCategory;
 };
@@ -92,17 +86,15 @@ exports.getListPaging = async (data) => {
 
 exports.megaMenu = async () => {
     try {
-        const a = await ModelRootCategory
-        .find({isActive: true, isRoot: true}).populate({
-            
-            // Get friends of friends - populate the 'friends' array for every friend
-            populate: [{ path: 'parent' }],
-            path: 'parent',
-        });
-
-        return a;
+        const megaMenu = await ModelRootCategory
+            .find({ isActive: true, isRoot: true }).populate({
+                path: 'parent',
+                match: { isActive: true },
+                populate: [{ path: 'parent' }],
+            });
+        return megaMenu;
     } catch (error) {
-        console.log(error);
+        logger.error(error)
     }
 };
 
@@ -149,16 +141,8 @@ exports.remove = (data) => {
     const { id } = data;
     ModelRootCategory.findByIdAndRemove(id, function (err) {
         if (err) {
-            console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return false
         }
         return true;
     })
 };
-
-function autoPopulateSubs(next) {
-    this.populate('parent');
-    next();
-}
-
