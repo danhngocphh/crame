@@ -6,28 +6,24 @@ const CrawlSchema = require('./crawl.schema');
 const route = Router();
 
 route.post(
-    '/product-api',
-    Middleware.isValidate(CrawlSchema.apiProductPOST),
-    CrawlController.callApiProduct
+  '/category',
+  Middleware.isAuth,
+  Middleware.isValidate(CrawlSchema.scrapeCategoryPOST),
+  CrawlController.scrapeCategory,
 );
 
 route.post(
-    '/category-api',
-    Middleware.isValidate(CrawlSchema.CategoryPOST),
-    CrawlController.callApiCategory
+  '/product',
+  Middleware.isAuth,
+  Middleware.isValidate(CrawlSchema.scrapeProductPOST),
+  CrawlController.scrapeProduct,
 );
 
 route.post(
-    '/product',
-    Middleware.isValidate(CrawlSchema.crawlProductPOST),
-    CrawlController.crawlProduct
+  '/product-detail',
+  Middleware.isAuth,
+  Middleware.isValidate(CrawlSchema.scrapeDetailProductPOST),
+  CrawlController.scrapeDetailProduct,
 );
-
-route.post(
-    '/category',
-    Middleware.isValidate(CrawlSchema.CategoryPOST),
-    CrawlController.crawlCategory
-);
-
 
 module.exports = route;

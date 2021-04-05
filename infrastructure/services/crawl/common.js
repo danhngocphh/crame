@@ -1,18 +1,14 @@
 const puppeteer = require("puppeteer");
-
+const logger = require('../../logger');
 const launchBrowserInstance = async () => {
-    try {
-      console.log('[Debug] Creating the browser');
-      const browserInstance = await puppeteer.launch({
+    logger.silly('[Silly] Create new browser')
+    const browserInstance = await puppeteer.launch({
         headless: false,
         args: ['--no-sandbox', '--start-maximized'],
         defaultViewport: null,
-      });
-      return browserInstance;
-    } catch (error) {
-      console.log('[Error]::browser', error);
-    }
-  };
+    });
+    return browserInstance;
+};
 
 
 const getPageContent = async (url) => {

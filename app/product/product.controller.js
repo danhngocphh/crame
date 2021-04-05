@@ -1,25 +1,25 @@
-const { ActionResponse, APIError } = require('../../helpers');
-const { saveDB } = require('../../infrastructure/services');
 const _ = require('lodash');
-const config = require('../../config');
+const { ActionResponse, APIError } = require('../../helpers');
+const {
+  product: ProductModel,
+} = require('../../infrastructure/database/models');
+const ProductService = require('./product.service')
 
-const dbController = {
-  add: async (req, res, next) => {
+const ProductController = {
+  getAll: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { body: dataReq } = req;
-      const product = dataReq.data;
-      if (product && product.length > 0 && saveDB.addProduct(product)) {
-        actionResponse.saveComplete(product);
-      } else {
-        throw new APIError(config.crawler.errAddProduct, config.httpStatus.BadRequest, {
-          data: config.crawler.errAddProduct,
-        });
-      }
+      console.log(req.paginateOptions);
+      const { docs: productRecord, ...rest } = await ProductModel.paginate(
+        {},
+        req.paginateOptions
+      );
+      const userJson = await ProductService.toJson(productRecord);
+      return actionResponse.getPaginateDataSuccess(userJson, rest);
     } catch (error) {
-      console.log(error);
+      next(error);
     }
   },
 };
 
-module.exports = dbController;
+module.exports = ProductController;

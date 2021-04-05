@@ -9,6 +9,7 @@ class ActionResponse {
     return this.res.status(200).json({
       success: true,
       title: this.title,
+      total: data.length,
       data,
     });
   }

@@ -1,14 +1,12 @@
 const { Router } = require('express');
-const dbController = require('./product.controller');
 const Middleware = require('../middlewares');
-const dbSchema = require('./product.schema');
+const ProductService = require('./product.service');
+const ProductController = require('./product.controller');
 
 const route = Router();
-
-route.post(
-    '/add',
-    Middleware.isValidate(dbSchema.product),
-    dbController.add
-);
+route.param('productId', ProductService.findProductById);
+route
+  .route('/')
+  .get(Middleware.attachPaginateOptions, ProductController.getAll);
 
 module.exports = route;

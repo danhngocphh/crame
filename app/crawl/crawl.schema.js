@@ -1,20 +1,21 @@
 const Joi = require('joi');
 
 const CrawlSchema = {
-    apiProductPOST: Joi.object({
-        storeId: Joi.string().required(),
-        rootCategoryId: Joi.string().required(),
-        categoryId: Joi.number().required(),
-        limit: Joi.number().required(),
+    scrapeCategoryPOST: Joi.object({
+        url: Joi.string().uri().required(),
+        selector: Joi.string().required(),
     }),
-    crawlProductPOST: Joi.object({
-        storeId: Joi.string().required(),
-        rootCategoryId: Joi.string().required(),
-        url: Joi.string().required()
+    scrapeProductPOST: Joi.object({
+        url: Joi.string().uri().required(),
+        selector: Joi.string().required(),
+        doAutoScroll: Joi.boolean(),
     }),
-    CategoryPOST: Joi.object({
-        storeId: Joi.string().required()
-    })
+    scrapeDetailProductPOST: Joi.object({
+        url: Joi.string().uri().required(),
+        selectorName: Joi.string().required(),
+        selectorImage: Joi.string().required(),
+        selectorPrice: Joi.string().required(),
+    }),
 };
 
 module.exports = CrawlSchema;
