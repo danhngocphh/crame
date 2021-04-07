@@ -42,8 +42,10 @@
     "nodemailer": "^6.4.17",
     "nodemailer-express-handlebars": "^4.0.0",
     "puppeteer": "^5.5.0",
+    "pythonic": "^2.0.3",
     "redis": "^3.0.2",
     "request-ip": "^2.1.3",
+    "request-promise": "^4.2.6",
     "winston": "^3.3.3"
   }
 }

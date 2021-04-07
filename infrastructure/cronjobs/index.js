@@ -14,7 +14,8 @@ module.exports = {
         processEvery: config.cronjobs.pooltime,
         maxConcurrency: config.cronjobs.concurrency,
       });
-      const jobTypes = ["category.crawl", "product.crawl"];
+      // const jobTypes = ["category.crawl", "product.crawl"];
+      const jobTypes = [];
       jobTypes.forEach(async (type) => {
         await require("./jobs/" + type)(agenda);
       });
