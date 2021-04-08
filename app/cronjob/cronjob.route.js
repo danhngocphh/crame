@@ -3,7 +3,7 @@ const { promisify } = require("util");
 const { ActionResponse, APIError } = require('../../helpers');
 const cronJobController = require('./cronjob.controller');
 const Middleware = require('../middlewares');
-const { get: agendaT } = require('../../infrastructure/cronjobs')
+const { get: getAgenda } = require('../../infrastructure/cronjobs')
 // const cronJobSchema = require('./cronjob.schema');
 const {
     defineJob,
@@ -11,29 +11,34 @@ const {
     jobAssertions,
     promiseJobOperation,
 } = require("./cronjob.controller");
+
 const route = Router();
-const agenda = agendaT();
+const agenda = getAgenda();
+
+
 
 const getJobMiddleware = (
     jobAssertion,
     jobOperation,
-    errorCode = 400
-  ) => async (ctx, next) => {
-    const job = {};
-    if (ctx.params.jobName) {
-      job.name = ctx.params.jobName;
+) => async (req, res, next) => {
+    const actionResponse = new ActionResponse(res);
+    console.log(req.body)
+    const job = req.body;
+    if (req.params.jobName) {
+        job.name = req.params.jobName;
     }
-  
+
     const jobs = await jobsReady;
-    ctx.body = await promiseJobOperation(
-      job,
-      jobs,
-      agenda,
-      jobAssertion,
-      jobOperation
-    ).catch((error) => ctx.throw(errorCode, error));
-    await next();
-  };
+
+    req.body = await promiseJobOperation(
+        job,
+        jobs,
+        agenda,
+        jobAssertion,
+        jobOperation
+    ).catch((error) => console.log(error));
+    actionResponse.setupCronjobComplete(req.body)
+};
 
 // route.all('*', Middleware.isAuth);
 /* Handle current user */
@@ -54,13 +59,6 @@ const jobsReady = agenda._ready.then(async () => {
 
 route
     .route('/')
-    // .get(async (ctx, next) => {
-    //     if (settings.appId && ctx.request.headers["x-api-key"] !== settings.appId) {
-    //         ctx.throw(403, "Forbidden");
-    //     }
-    //     ctx.body = await jobsReady.then((jobs) => jobs.toArray());
-    //     await next();
-    // })
     .get(async (req, res, next) => {
         try {
             const actionResponse = new ActionResponse(res);
@@ -78,7 +76,7 @@ route
     })
     .post(getJobMiddleware(
         jobAssertions.notExists,
-        jobOperations.create
+        jobOperations.creat
     ));
 
 route
@@ -89,7 +87,7 @@ route
     ))
     .put(getJobMiddleware(
         jobAssertions.alreadyExists,
-        jobOperations.delete
+        jobOperations.update
     ));
 
 route.post("/once", getJobMiddleware(

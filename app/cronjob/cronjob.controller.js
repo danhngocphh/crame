@@ -7,6 +7,7 @@ const rp = require("request-promise");
 const { isValidDate, buildUrlWithParams, buildUrlWithQuery } = require("./cronjob.common");
 
 const getCheckJobFormatFunction = (jobProperty, defaultJob = {}) => (job) => {
+  console.log(job);
   if (!job.name || (jobProperty && !job[jobProperty])) {
     throw new Error(
       `expected request body to match {name${

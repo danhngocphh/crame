@@ -7,21 +7,21 @@ const route = Router();
 
 route.post(
   '/category',
-  Middleware.isAuth,
+  // Middleware.isAuth,
   Middleware.isValidate(CrawlSchema.scrapeCategoryPOST),
   CrawlController.scrapeCategory,
 );
 
 route.post(
   '/product',
-  Middleware.isAuth,
+  // Middleware.isAuth,
   Middleware.isValidate(CrawlSchema.scrapeProductPOST),
   CrawlController.scrapeProduct,
 );
 
 route.post(
   '/product-detail',
-  Middleware.isAuth,
+  // Middleware.isAuth,
   Middleware.isValidate(CrawlSchema.scrapeDetailProductPOST),
   CrawlController.scrapeDetailProduct,
 );
