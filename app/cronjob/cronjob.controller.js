@@ -1,10 +1,12 @@
 const { ActionResponse, APIError } = require('../../helpers');
-const _ = require('lodash');
-const config = require('../../config');
-// const cronJobService  = require('./cronjob.services');
+// const _ = require('lodash');
+// const config = require('../../config');
+const { promisify } = require("util");
+const { get: getAgenda } = require('../../infrastructure/cronjobs')
 
 const rp = require("request-promise");
 const { isValidDate, buildUrlWithParams, buildUrlWithQuery } = require("./cronjob.common");
+const agenda = getAgenda();
 
 const getCheckJobFormatFunction = (jobProperty, defaultJob = {}) => (job) => {
   console.log(job);
@@ -190,4 +192,49 @@ const promiseJobOperation = async (
   return jobOperation.fn(job, jobs, agenda);
 };
 
-module.exports = { promiseJobOperation, jobOperations, jobAssertions, defineJob };
+const getJobMiddleware = (
+  jobAssertion,
+  jobOperation,
+) => async (req, res, next) => {
+  const actionResponse = new ActionResponse(res);
+  console.log(req.body)
+  const job = req.body;
+  if (req.params.jobName) {
+      job.name = req.params.jobName;
+  }
+
+  const jobs = await jobsReady;
+
+  req.body = await promiseJobOperation(
+      job,
+      jobs,
+      agenda,
+      jobAssertion,
+      jobOperation
+  ).catch((error) => console.log(error));
+  actionResponse.setupCronjobComplete(req.body)
+};
+
+const jobsReady = agenda._ready.then(async () => {
+  const jobs = agenda._mdb.collection("agendaJobs");
+  jobs.toArray = () => {
+      const jobsCursor = jobs.find();
+      return promisify(jobsCursor.toArray).bind(jobsCursor)();
+  };
+  await jobs
+      .toArray()
+      .then((jobsArray) =>
+          Promise.all(jobsArray.map((job) => defineJob(job, jobs, agenda)))
+      );
+  return jobs;
+});
+
+
+module.exports = {
+  promiseJobOperation,
+  jobOperations,
+  jobAssertions,
+  defineJob,
+  getJobMiddleware,
+  jobsReady
+};

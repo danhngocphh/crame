@@ -1,61 +1,20 @@
 const { Router } = require('express');
-const { promisify } = require("util");
 const { ActionResponse, APIError } = require('../../helpers');
-const cronJobController = require('./cronjob.controller');
-const Middleware = require('../middlewares');
-const { get: getAgenda } = require('../../infrastructure/cronjobs')
+// const cronJobController = require('./cronjob.controller');
+// const Middleware = require('../middlewares');
 // const cronJobSchema = require('./cronjob.schema');
 const {
-    defineJob,
     jobOperations,
     jobAssertions,
-    promiseJobOperation,
+    getJobMiddleware,
+    jobsReady
 } = require("./cronjob.controller");
 
 const route = Router();
-const agenda = getAgenda();
 
-
-
-const getJobMiddleware = (
-    jobAssertion,
-    jobOperation,
-) => async (req, res, next) => {
-    const actionResponse = new ActionResponse(res);
-    console.log(req.body)
-    const job = req.body;
-    if (req.params.jobName) {
-        job.name = req.params.jobName;
-    }
-
-    const jobs = await jobsReady;
-
-    req.body = await promiseJobOperation(
-        job,
-        jobs,
-        agenda,
-        jobAssertion,
-        jobOperation
-    ).catch((error) => console.log(error));
-    actionResponse.setupCronjobComplete(req.body)
-};
 
 // route.all('*', Middleware.isAuth);
 /* Handle current user */
-
-const jobsReady = agenda._ready.then(async () => {
-    const jobs = agenda._mdb.collection("agendaJobs");
-    jobs.toArray = () => {
-        const jobsCursor = jobs.find();
-        return promisify(jobsCursor.toArray).bind(jobsCursor)();
-    };
-    await jobs
-        .toArray()
-        .then((jobsArray) =>
-            Promise.all(jobsArray.map((job) => defineJob(job, jobs, agenda)))
-        );
-    return jobs;
-});
 
 route
     .route('/')
@@ -76,7 +35,7 @@ route
     })
     .post(getJobMiddleware(
         jobAssertions.notExists,
-        jobOperations.creat
+        jobOperations.create
     ));
 
 route
