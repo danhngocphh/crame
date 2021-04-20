@@ -4,14 +4,23 @@ const {
   product: ProductModel,
 } = require('../../infrastructure/database/models');
 const ProductService = require('./product.service')
+const config = require('../../config')
 
 const ProductController = {
   getAll: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
+      const {
+        name: qName
+      } = req.query;
       console.log(req.paginateOptions);
       const { docs: productRecord, ...rest } = await ProductModel.paginate(
-        {},
+        {
+          $and: [
+            qName ? { name: { $regex: qName } } : {},
+            { isActive: true }
+          ],
+        },
         req.paginateOptions
       );
       const productJson = await ProductService.toJson(productRecord);
@@ -84,9 +93,11 @@ const ProductController = {
         type,
         productCompare
       } = req.body;
-      ProductModel.findOneAndUpdate({ id }, { $set: product }, { new: true }, async (err, doc) => {
+      ProductModel.findOneAndUpdate({ _id: id }, { $set: product }, { new: true }, async (err, doc) => {
         if (err) {
-          next(error);
+          throw new APIError('Err on updateOne', config.httpStatus.BadRequest,
+          err,
+        );
         }
         const productJson = await ProductService.toJson(doc);
         return actionResponse.createdDataSuccess(productJson);
@@ -117,14 +128,14 @@ const ProductController = {
   },
   createMultiple: async (req, res, next) => {
     try {
-      const arrayProduct = [];
+      let arrayProduct = [];
       const actionResponse = new ActionResponse(res);
-      if (!Array.isArray(req.body.products)) {
+      if (Array.isArray(req.body.products)) {
+        arrayProduct = req.body.products;
+      } else {
         throw new APIError('Products are not array', config.httpStatus.BadRequest,
           "Try again!",
         );
-      } else {
-        arrayProduct = req.body.products;
       }
       ProductModel.insertMany(arrayProduct)
         .then(async function (docs) {
@@ -142,14 +153,17 @@ const ProductController = {
     try {
       var i, len = 0;
       const actionResponse = new ActionResponse(res);
+      console.log(req.body.products)
       if (Array.isArray(req.body.products)) {
         len = req.body.products.length;
       }
+      console.log("dmm-------->",req.body.products[0][id]);
       for (i = 0; i < len; i++) {
         for (var id in req.body.products[i]) {
           console.log(id);
         }
-        ProductModel.update({ "_id": id }, req.body.products[i][id], function (err, numAffected) {
+        console.log("dmmm----->",req.body.products[i][id]);
+        ProductModel.update({ _id: id }, req.body.products[i][id], function (err, numAffected) {
           if (err) {
             throw new APIError('Err on update', config.httpStatus.BadRequest,
               err,
@@ -170,6 +184,7 @@ const ProductController = {
       if (Array.isArray(req.body.ids)) {
         len = req.body.ids.length;
       }
+      console.log(req.body)
       for (i = 0; i < len; i++) {
         for (var id in req.body.ids[i]) {
           console.log(id);

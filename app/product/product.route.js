@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const Middleware = require('../middlewares');
-// const ProductSchema = require('./product.schema');
+const ProductSchema = require('./product.schema');
 const ProductService = require('./product.service');
 const ProductController = require('./product.controller');
 
@@ -13,34 +13,32 @@ route
     ProductController.getAll
   )
   .post(
-    // Middleware.isValidate(ProductSchema.createUserPOST),
+    Middleware.isValidate(ProductSchema.createOne),
     ProductController.createOne
   );
 
 route
   .route('/:id')
   .put(
-    // Middleware.isValidate(ProductSchema.createUserPOST),
+    Middleware.isValidate(ProductSchema.updateOne),
     ProductController.updateOne
   )
   .delete(
-    // Middleware.isValidate(ProductSchema.createUserPOST),
     ProductController.deleteOne
   );
 
 route
   .route('/bulk')
-  .get(Middleware.attachPaginateOptions, ProductController.getAll)
   .post(
-    // Middleware.isValidate(ProductSchema.createUserPOST),
+    Middleware.isValidate(ProductSchema.createMultiple),
     ProductController.createMultiple
   )
   .put(
-    // Middleware.isValidate(ProductSchema.createUserPOST),
+    Middleware.isValidate(ProductSchema.updateMultiple),
     ProductController.updateMultiple
   )
   .delete(
-    // Middleware.isValidate(ProductSchema.createUserPOST),
+    Middleware.isValidate(ProductSchema.deleteMultiple),
     ProductController.deleteMultiple
   )
 
