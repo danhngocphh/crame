@@ -30,12 +30,12 @@ const dbSchema = {
     updateMultiple:Joi.object({
         products: Joi.array()
         .items({
-            id: Joi.string().required(),
-            storeId: Joi.string().required(),
-            rootCategoryId: Joi.string().required(),
-            url: Joi.string().required(),
-            name: Joi.string().required(),
-            price: Joi.string().required(),
+            id: Joi.string(),
+            storeId: Joi.string(),
+            rootCategoryId: Joi.string(),
+            url: Joi.string(),
+            name: Joi.string(),
+            price: Joi.string(),
         }),
     }),
     deleteMultiple:Joi.object({

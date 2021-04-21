@@ -18,16 +18,6 @@ route
   );
 
 route
-  .route('/:id')
-  .put(
-    Middleware.isValidate(ProductSchema.updateOne),
-    ProductController.updateOne
-  )
-  .delete(
-    ProductController.deleteOne
-  );
-
-route
   .route('/bulk')
   .post(
     Middleware.isValidate(ProductSchema.createMultiple),
@@ -41,5 +31,17 @@ route
     Middleware.isValidate(ProductSchema.deleteMultiple),
     ProductController.deleteMultiple
   )
+
+route
+  .route('/:id')
+  .put(
+    Middleware.isValidate(ProductSchema.updateOne),
+    ProductController.updateOne
+  )
+  .delete(
+    ProductController.deleteOne
+  );
+
+
 
 module.exports = route;

@@ -110,7 +110,7 @@ const ProductController = {
     try {
       const actionResponse = new ActionResponse(res);
       const id = req.params.id;
-      ProductModel.findById(req.params.id, function (err, product) {
+      ProductModel.findById(id, function (err, product) {
         return product.remove(async function (err) {
           if (!err) {
             const productJson = await ProductService.toJson(product);
@@ -143,7 +143,7 @@ const ProductController = {
           return actionResponse.createdDataSuccess(productJson);
         })
         .catch(function (err) {
-          next(error);
+          next(err);
         });
     } catch (error) {
       next(error);
@@ -184,12 +184,8 @@ const ProductController = {
       if (Array.isArray(req.body.ids)) {
         len = req.body.ids.length;
       }
-      console.log(req.body)
       for (i = 0; i < len; i++) {
-        for (var id in req.body.ids[i]) {
-          console.log(id);
-        }
-        ProductModel.findById(id, function (err, product) {
+        ProductModel.findById(req.body.ids[i], function (err, product) {
           return product.remove(function (err) {
             if (err) {
               throw new APIError('Err on delete', config.httpStatus.BadRequest,
@@ -199,8 +195,7 @@ const ProductController = {
           });
         });
       }
-      const productJson = await ProductService.toJson(req.body.ids);
-      return actionResponse.createdDataSuccess(productJson);
+      return actionResponse.createdDataSuccess(req.body);
     } catch (error) {
       next(error);
     }
