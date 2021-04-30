@@ -59,15 +59,6 @@ class ActionResponse {
       data,
     });
   }
-
-  
-  setupCronjobComplete(data) {
-    return this.res.status(200).json({
-      success: true,
-      msg: 'Setup Cronjob complete!',
-      data,
-    });
-  }
 }
 
 module.exports = ActionResponse;
