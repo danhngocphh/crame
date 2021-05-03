@@ -4,6 +4,7 @@ const dbSchema = {
     add: Joi.object({
         name: Joi.string().required(),
         isRoot: Joi.boolean().required(),
+        parentId: Joi.string(),
         description: Joi.string()
     }),
     update: Joi.object({

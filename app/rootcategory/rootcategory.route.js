@@ -5,7 +5,7 @@ const rootCategorySchema = require('./rootcategory.schema');
 
 const route = Router();
 
-// route.all('*', Middleware.isAuth);
+route.all('*', Middleware.isAuth);
 /* Handle current user */
 
 route.get(

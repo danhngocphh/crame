@@ -141,7 +141,6 @@ const rootCategoryController = {
       const actionResponse = new ActionResponse(res);
       const { currentUser, params } = req;
       let getRootCategory = await rootCategoryService.getById(params.idRootCategory)
-      console.log(getRootCategory)
       if (getRootCategory) {
         getRootCategory.listChild.push(params.idChild);
         getRootCategory.save();
