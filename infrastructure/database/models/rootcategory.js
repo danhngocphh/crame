@@ -6,7 +6,7 @@ let rootcategory = new mongoose.Schema({
         type: String,
         unique: true
     },
-    parent : [{
+    listChild : [{
         type : mongoose.Schema.Types.ObjectId,
         ref: "rootcategories",
         
@@ -29,8 +29,7 @@ let rootcategory = new mongoose.Schema({
         type: String
     },
     isRoot: {
-        type: Boolean,
-        default: false
+        type: Boolean
     },
     isActive: {
         type: Boolean,

@@ -1,24 +1,31 @@
 var { rootCategory: ModelRootCategory } = require('../../infrastructure/database/models');
 const ObjectID = require('mongodb').ObjectID;
+const config = require('../../config');
+const { APIError } = require('../../helpers');
 const logger = require('../../infrastructure/logger');
 
 exports.add = async (data) => {
-    const { name, parent, description, createdBy, updatedBy } = data;
-    const category = new ModelRootCategory(
-        {
-            name,
-            parent: new ObjectID(parent),
-            description,
-            createdBy,
-            updatedBy
-        }
-    );
-    const add = await category.save(function (err) {
-        if (err) {
-            return null
-        }
-    })
-    return add;
+    try{
+        const { name, description, isRoot, createdBy, updatedBy } = data;
+        const category = new ModelRootCategory(
+            {
+                name,
+                description,
+                isRoot,
+                createdBy,
+                updatedBy
+            }
+        );
+        const add = await category.save(function (err) {
+            if (err) {
+                console.log(err)
+                return null
+            }
+        })
+        return category;
+    } catch{
+        return null;
+    }
 };
 
 exports.addChild = async (data) => {
@@ -38,24 +45,25 @@ exports.addChild = async (data) => {
     return addChild
 };
 
-exports.deleteChild = (data) => {
-    const { idRootCategory, idChildCategory } = data;
-    ModelRootCategory.updateOne({ _id: idRootCategory }, {
-        $pull: {
-            childCategory: { _id: idChildCategory }
-        }
-    }, (err, result) => {
-        if (err) {
-            return false
-        }
+exports.deleteChild = async (data) => {
+    try {
+        const { idRootCategory, idChildCategory } = data;
+        await ModelRootCategory.updateOne({ _id: idRootCategory }, {
+            $pull: {
+                childCategory: { _id: idChildCategory }
+            }
+        });
         return true
-    });
+    } catch {
+        return false
+    }
+
 };
 
 exports.getById = (id) => {
     const rootCategory = ModelRootCategory.findById(id, function (err, category) {
         if (err) return null;
-    })
+    }).exec();
     return rootCategory;
 };
 
@@ -77,10 +85,9 @@ exports.getListPaging = async (data) => {
             },
             paginateOptions
         );
-        const rootCategoryJson = rootCategoryRecords.toJson();
-        return { rootCategoryJson, rest };
+        return { rootCategoryRecords, rest };
     } catch (error) {
-        next(error);
+        logger.error(error)
     }
 };
 
@@ -100,14 +107,13 @@ exports.megaMenu = async () => {
 
 exports.update = (data) => {
     const {
+        _id: id,
         name,
-        parent,
         description,
         updatedBy
     } = data;
     const category = {
         name,
-        parent,
         description,
         updatedBy
     };
@@ -130,7 +136,6 @@ exports.deleteItem = (data) => {
     const delRootCategory = ModelRootCategory.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy } }, function (err, category) {
         if (err) {
             console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
             return null
         };
     });
@@ -138,11 +143,16 @@ exports.deleteItem = (data) => {
 };
 
 exports.remove = (data) => {
-    const { id } = data;
-    ModelRootCategory.findByIdAndRemove(id, function (err) {
-        if (err) {
-            return false
-        }
+    try {
+        const { id } = data;
+        ModelRootCategory.findByIdAndRemove(id, function (err) {
+            if (err) {
+                logger.error(error)
+            }
+        })
         return true;
-    })
+    } catch {
+        logger.error(error)
+        return false
+    }
 };

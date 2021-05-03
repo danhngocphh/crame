@@ -1,23 +1,23 @@
 const Joi = require('joi');
 
 const dbSchema = {
-    set: Joi.object({
+    add: Joi.object({
         name: Joi.string().required(),
-        parent: Joi.string().required(),
-        description: Joi.string().required()
+        isRoot: Joi.boolean().required(),
+        description: Joi.string()
     }),
-    delete: Joi.object({
-        id: Joi.string().required()
+    update: Joi.object({
+        name: Joi.string().required(),
+        listChild: Joi.array(),
+        childCategory: Joi.array(),
+        isRoot: Joi.boolean().required(),
+        description: Joi.string()
     }),
-    addChild: Joi.object({
+    addChildCategory: Joi.object({
         idRoot: Joi.string().required(),
         name: Joi.string().required(),
         shopName: Joi.string().required(),
         url: Joi.string().required()
-    }),
-    deleteChild: Joi.object({
-        idRootCategory: Joi.string().required(),
-        idChildCategory: Joi.string().required()
     })
 };
 

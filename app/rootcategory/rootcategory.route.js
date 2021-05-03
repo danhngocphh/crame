@@ -18,7 +18,7 @@ route
     .route('/')
     .get(rootCategoryController.getListPaging)
     .post(
-        Middleware.isValidate(rootCategorySchema.set),
+        Middleware.isValidate(rootCategorySchema.add),
         rootCategoryController.add
     )
 
@@ -27,25 +27,30 @@ route
     .get(rootCategoryController.getById)
     .delete(rootCategoryController.deleteItem)
     .put(
-        Middleware.isValidate(rootCategorySchema.set),
+        Middleware.isValidate(rootCategorySchema.update),
         rootCategoryController.update
     )
 
 route.post(
     '/child',
-    Middleware.isValidate(rootCategorySchema.addChild),
-    rootCategoryController.addChild
+    Middleware.isValidate(rootCategorySchema.addChildCategory),
+    rootCategoryController.addChildCategory
 );
+
+route
+    .route('/listChild/:idRootCategory/:idChild')
+    .delete(rootCategoryController.deleteListChild)
+    .post(
+        rootCategoryController.addListChild
+    )
 
 route.delete(
     '/child/:idRootCategory/:idChildCategory',
-    Middleware.isValidate(rootCategorySchema.deleteChild),
-    rootCategoryController.deleteChild
+    rootCategoryController.deleteChildCategory
 );
 
 route.delete(
     '/remove/:id',
-    Middleware.isValidate(rootCategorySchema.delete),
     rootCategoryController.remove
 );
 
