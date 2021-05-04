@@ -5,8 +5,8 @@ const { APIError } = require('../../helpers');
 const logger = require('../../infrastructure/logger');
 
 exports.add = async (data) => {
-    try{
-        const { name, description, isRoot, createdBy, updatedBy } = data;
+    try {
+        const { name, description, parentId, isRoot, createdBy, updatedBy } = data;
         const category = new ModelRootCategory(
             {
                 name,
@@ -21,9 +21,18 @@ exports.add = async (data) => {
                 console.log(err)
                 return null
             }
-        })
+        });
+        if (parentId) {
+            let getRootCategory = await ModelRootCategory.findById(parentId, function (err, category) {
+                if (err) return null;
+            }).exec();
+            if (getRootCategory) {
+                getRootCategory.listChild.push(category._id);
+                getRootCategory.save();
+            }
+        }
         return category;
-    } catch{
+    } catch {
         return null;
     }
 };
