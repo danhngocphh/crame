@@ -6,7 +6,7 @@ const Middleware = require('../middlewares');
 
 const route = Router();
 
-// route.all('*', Middleware.isAuth);
+route.all('*', Middleware.isAuth);
 /* Handle current user */
 
 route
