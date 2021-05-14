@@ -13,7 +13,6 @@ route.get(
     rootCategoryController.megaMenu
 );
 
-
 route
     .route('/')
     .get(rootCategoryController.getListPaging)

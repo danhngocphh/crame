@@ -6,16 +6,11 @@ const ProductController = require('./product.controller');
 
 const route = Router();
 route.param('productId', ProductService.findProductById);
-route
-  .route('/')
-  .get(
-    Middleware.attachPaginateOptions,
-    ProductController.getAll
-  )
-  .post(
-    Middleware.isValidate(ProductSchema.createOne),
-    ProductController.createOne
-  );
+
+route.get(
+  '/related-products',
+  ProductController.relatedProducts
+);
 
 route
   .route('/bulk')
@@ -42,6 +37,15 @@ route
     ProductController.deleteOne
   );
 
-
+  route
+  .route('/')
+  .get(
+    Middleware.attachPaginateOptions,
+    ProductController.getAll
+  )
+  .post(
+    Middleware.isValidate(ProductSchema.createOne),
+    ProductController.createOne
+  );
 
 module.exports = route;

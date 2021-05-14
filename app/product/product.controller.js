@@ -13,11 +13,11 @@ const ProductController = {
       const {
         name: qName
       } = req.query;
-      console.log(req.paginateOptions);
+      const searchName = new RegExp(qName || '', 'i');
       const { docs: productRecord, ...rest } = await ProductModel.paginate(
         {
           $and: [
-            qName ? { name: { $regex: qName } } : {},
+            qName ? { name: searchName } : {},
             { isActive: true }
           ],
         },
@@ -96,8 +96,8 @@ const ProductController = {
       ProductModel.findOneAndUpdate({ _id: id }, { $set: product }, { new: true }, async (err, doc) => {
         if (err) {
           throw new APIError('Err on updateOne', config.httpStatus.BadRequest,
-          err,
-        );
+            err,
+          );
         }
         const productJson = await ProductService.toJson(doc);
         return actionResponse.createdDataSuccess(productJson);
@@ -157,12 +157,12 @@ const ProductController = {
       if (Array.isArray(req.body.products)) {
         len = req.body.products.length;
       }
-      console.log("dmm-------->",req.body.products[0][id]);
+      console.log("dmm-------->", req.body.products[0][id]);
       for (i = 0; i < len; i++) {
         for (var id in req.body.products[i]) {
           console.log(id);
         }
-        console.log("dmmm----->",req.body.products[i][id]);
+        console.log("dmmm----->", req.body.products[i][id]);
         ProductModel.update({ _id: id }, req.body.products[i][id], function (err, numAffected) {
           if (err) {
             throw new APIError('Err on update', config.httpStatus.BadRequest,
@@ -196,6 +196,31 @@ const ProductController = {
         });
       }
       return actionResponse.createdDataSuccess(req.body);
+    } catch (error) {
+      next(error);
+    }
+  },
+  relatedProducts: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const {
+        name: qName,
+        rootCategoryId: qRootCategoryId
+      } = req.query;
+      const arrKey = qName.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '').split(' ', 3);
+      const getKey = arrKey.join(" ");
+      const search = new RegExp(getKey || '', 'i');
+      const productRecord = await ProductModel.find(
+        {
+          $and: [
+            qName ? { name: search } : {},
+            qRootCategoryId ? { rootCategoryId: qRootCategoryId } : {},
+            { isActive: true }
+          ],
+        }
+      ).limit(5);
+      const productJson = await ProductService.toJson(productRecord);
+      return actionResponse.getDataSuccess(productJson);
     } catch (error) {
       next(error);
     }
