@@ -104,9 +104,9 @@ exports.megaMenu = async () => {
     try {
         const megaMenu = await ModelRootCategory
             .find({ isActive: true, isRoot: true }).populate({
-                path: 'parent',
+                path: 'listChild',
                 match: { isActive: true },
-                populate: [{ path: 'parent' }],
+                populate: [{ path: 'listChild' }],
             });
         return megaMenu;
     } catch (error) {
