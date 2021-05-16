@@ -2,6 +2,7 @@ const _ = require('lodash');
 const { ActionResponse, APIError } = require('../../helpers');
 const {
   product: ProductModel,
+  keyword: KeywordModel
 } = require('../../infrastructure/database/models');
 const ProductService = require('./product.service')
 const config = require('../../config')
@@ -11,13 +12,28 @@ const ProductController = {
     try {
       const actionResponse = new ActionResponse(res);
       const {
-        name: qName
+        name: qName,
+        rootCategoryId: qRootCategoryId
       } = req.query;
+      if (qName) {
+        let dateT = new Date(Date.now());
+        dateT.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+        const keyword = new KeywordModel({
+          keyword: qName.normalize("NFD").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '').toLowerCase(),
+          date: dateT
+        })
+        keyword.save(async function (err) {
+          if (err) {
+            next(err);
+          }
+        });
+      }
       const searchName = new RegExp(qName || '', 'i');
       const { docs: productRecord, ...rest } = await ProductModel.paginate(
         {
           $and: [
             qName ? { name: searchName } : {},
+            qRootCategoryId ? { rootCategoryId: { "$in": [qRootCategoryId] } } : {},
             { isActive: true }
           ],
         },
@@ -214,7 +230,7 @@ const ProductController = {
         {
           $and: [
             qName ? { name: search } : {},
-            qRootCategoryId ? { rootCategoryId: qRootCategoryId } : {},
+            qRootCategoryId ? { rootCategoryId: { "$in": [qRootCategoryId] } } : {},
             { isActive: true }
           ],
         }

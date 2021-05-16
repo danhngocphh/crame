@@ -12,11 +12,11 @@ const product = new mongoose.Schema({
     ref: 'stores',
     required: true,
   },
-  rootCategoryId: {
+  rootCategoryId: [{
     type: Schema.Types.ObjectId,
     ref: 'rootcategories',
     required: true,
-  },
+  }],
   url: {
     type: String,
     required: true
