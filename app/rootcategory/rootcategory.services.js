@@ -59,11 +59,13 @@ exports.deleteChild = async (data) => {
 
 };
 
-exports.getById = (id) => {
-    const rootCategory = ModelRootCategory.findById(id, function (err, category) {
-        if (err) return null;
-    }).exec();
-    return rootCategory;
+exports.getById = async (id) => {
+    try {
+        const rootCategory = await ModelRootCategory.findById(id).exec();
+        return rootCategory.toJSON();
+    } catch (error) {
+        throw error
+    }
 };
 
 
