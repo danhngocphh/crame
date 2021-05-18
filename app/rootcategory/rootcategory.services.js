@@ -138,7 +138,7 @@ exports.megaMenu = async () => {
                 match: { isActive: true },
                 populate: [{ path: 'listChild' }],
             });
-        return megaMenu.toJSON();
+        return megaMenu;
     } catch (error) {
         throw new APIError('Cant get megaMenu rootCategory', config.httpStatus.BadRequest, {
             message: error,
@@ -149,14 +149,16 @@ exports.megaMenu = async () => {
 exports.update = async (data) => {
     try {
         const {
-            _id: id,
+            id,
             name,
             description,
+            isRoot,
             updatedBy
         } = data;
         const category = {
             name,
             description,
+            isRoot,
             updatedBy
         };
         const editRootCategory = await ModelRootCategory.findByIdAndUpdate(id, { $set: category }, function (err, category) {

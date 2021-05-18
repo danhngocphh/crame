@@ -9,10 +9,8 @@ const dbSchema = {
     }),
     update: Joi.object({
         name: Joi.string().required(),
-        listChild: Joi.array(),
-        childCategory: Joi.array(),
         isRoot: Joi.boolean().required(),
-        description: Joi.string()
+        description: Joi.string().required()
     }),
     addChildCategory: Joi.object({
         idRoot: Joi.string().required(),

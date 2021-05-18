@@ -75,7 +75,8 @@ const rootCategoryController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { currentUser, body: dataReq } = req;
-      const list = await rootCategoryService.update({ ...dataReq, updatedBy: currentUser.id })
+      const id = req.params.id;
+      const list = await rootCategoryService.update({ id,...dataReq, updatedBy: currentUser.id })
       if (list) {
         return actionResponse.getDataSuccess({ ...list });
       } else {
