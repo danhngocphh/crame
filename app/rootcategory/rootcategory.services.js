@@ -12,6 +12,7 @@ exports.add = async (data) => {
                 name,
                 description,
                 isRoot,
+                parentId,
                 createdBy,
                 updatedBy
             }
@@ -36,7 +37,7 @@ exports.add = async (data) => {
                 getRootCategory.save();
             }
         }
-        return category;
+        return category.toJSON();
     } catch {
         throw new APIError('Cant add rootCategory', config.httpStatus.BadRequest, {
             Message: `Try again`,
@@ -151,16 +152,26 @@ exports.update = async (data) => {
         const {
             id,
             name,
+            parentId,
             description,
             isRoot,
             updatedBy
         } = data;
         const category = {
-            name,
-            description,
-            isRoot,
             updatedBy
         };
+        if(parentId){
+            category.parentId = parentId;
+        }
+        if(name){
+            category.name = name;
+        }
+        if(description){
+            category.description = description;
+        }
+        if(isRoot){
+            category.isRoot = isRoot;
+        }
         const editRootCategory = await ModelRootCategory.findByIdAndUpdate(id, { $set: category }, function (err, category) {
             if (err) {
                 throw new APIError('Cant update rootCategory', config.httpStatus.BadRequest, {

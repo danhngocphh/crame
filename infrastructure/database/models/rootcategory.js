@@ -11,6 +11,9 @@ let rootcategory = new mongoose.Schema({
         ref: "rootcategories",
         
     }], 
+    parentId: {
+        type: String
+    },
     crawlCategory: [{
         name: String,
         shopName: String,
