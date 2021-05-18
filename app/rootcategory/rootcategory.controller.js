@@ -110,7 +110,7 @@ const rootCategoryController = {
       const { currentUser, params } = req;
       const list = await rootCategoryService.remove({ ...params, updatedBy: currentUser.id });
       if (list) {
-        return actionResponse.getDataSuccess({ ...params });
+        return actionResponse.getDataSuccess({ ...list });
       } else {
         throw new APIError('Cant remove category', config.httpStatus.BadRequest, {
           msg: "Fail to remove category. Check your database, pls!"
@@ -126,7 +126,7 @@ const rootCategoryController = {
       const { currentUser, params } = req;
       const list = await rootCategoryService.deleteItem({ ...params, updatedBy: currentUser.id });
       if (list) {
-        return actionResponse.getDataSuccess({ ...dataReq });
+        return actionResponse.getDataSuccess({ ...list });
       } else {
         throw new APIError('Cant delete category', config.httpStatus.BadRequest, {
           msg: "Fail to delete category. Check your database, pls!"
@@ -139,7 +139,7 @@ const rootCategoryController = {
   addListChild: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { currentUser, params } = req;
+      const { params } = req;
       let getRootCategory = await rootCategoryService.getById(params.idRootCategory)
       if (getRootCategory) {
         getRootCategory.listChild.push(params.idChild);
@@ -157,9 +157,8 @@ const rootCategoryController = {
   deleteListChild: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { currentUser, params } = req;
+      const { params } = req;
       let getRootCategory = await rootCategoryService.getById(params.idRootCategory)
-      console.log(getRootCategory)
       if (getRootCategory) {
         getRootCategory.listChild.pull(params.idChild);
         getRootCategory.save();

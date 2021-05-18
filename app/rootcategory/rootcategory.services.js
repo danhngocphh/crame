@@ -5,43 +5,68 @@ const { APIError } = require('../../helpers');
 const logger = require('../../infrastructure/logger');
 
 exports.add = async (data) => {
-    // TODO: Các error nên được throw ra để client bắt lỗi và hiển thị
-    const { name, description, parentId, isRoot, createdBy, updatedBy } = data;
-    const category = new ModelRootCategory(
-        {
-            name,
-            description,
-            isRoot,
-            createdBy,
-            updatedBy
+    try {
+        const { name, description, parentId, isRoot, createdBy, updatedBy } = data;
+        const category = new ModelRootCategory(
+            {
+                name,
+                description,
+                isRoot,
+                createdBy,
+                updatedBy
+            }
+        );
+        await category.save(function (err) {
+            if (err) {
+                throw new APIError('Cant add rootCategory', config.httpStatus.BadRequest, {
+                    Message: err,
+                });
+            }
+        });
+        if (parentId) {
+            let getRootCategory = await ModelRootCategory.findById(parentId, function (err, category) {
+                if (err) {
+                    throw new APIError('Cant find rootCategory to add parentId', config.httpStatus.BadRequest, {
+                        Message: err,
+                    });
+                };
+            }).exec();
+            if (getRootCategory) {
+                getRootCategory.listChild.push(category._id);
+                getRootCategory.save();
+            }
         }
-    );
-    await category.save();
-    if (parentId) {
-        let getRootCategory = await ModelRootCategory.findById(parentId).exec();
-        if (getRootCategory) {
-            getRootCategory.listChild.push(category._id);
-            getRootCategory.save();
-        }
+        return category;
+    } catch {
+        throw new APIError('Cant add rootCategory', config.httpStatus.BadRequest, {
+            Message: `Try again`,
+        });
     }
-    return category;
 };
 
 exports.addChild = async (data) => {
-    const { idRoot, name, shopName, url, createdBy, updatedBy } = data;
-    const childCategory = {
-        name,
-        shopName,
-        url,
-        createdBy,
-        updatedBy
-    };
-    const addChild = await ModelRootCategory.updateOne({ _id: idRoot }, { $push: { childCategory: childCategory } }, (err, result) => {
-        if (err) {
-            return null
-        }
-    });
-    return addChild
+    try {
+        const { idRoot, name, shopName, url, createdBy, updatedBy } = data;
+        const childCategory = {
+            name,
+            shopName,
+            url,
+            createdBy,
+            updatedBy
+        };
+        const addChild = await ModelRootCategory.updateOne({ _id: idRoot }, { $push: { childCategory: childCategory } }, (err, result) => {
+            if (err) {
+                throw new APIError('Cant addChild rootCategory', config.httpStatus.BadRequest, {
+                    message: err,
+                });
+            }
+        });
+        return addChild.toJSON()
+    } catch (err) {
+        throw new APIError('Cant add rootCategory', config.httpStatus.BadRequest, {
+            message: err,
+        });
+    }
 };
 
 exports.deleteChild = async (data) => {
@@ -54,17 +79,27 @@ exports.deleteChild = async (data) => {
         });
         return true
     } catch {
-        return false
+        throw new APIError('Cant deleteChild rootCategory', config.httpStatus.BadRequest, {
+            message: err,
+        });
     }
 
 };
 
 exports.getById = async (id) => {
     try {
-        const rootCategory = await ModelRootCategory.findById(id).exec();
+        const rootCategory = await ModelRootCategory.findById(id, function (err, category) {
+            if (err) {
+                throw new APIError('Cant getById rootCategory', config.httpStatus.BadRequest, {
+                    message: err,
+                });
+            };
+        }).exec();
         return rootCategory.toJSON();
-    } catch (error) {
-        throw error
+    } catch (err) {
+        throw new APIError('Cant getById rootCategory', config.httpStatus.BadRequest, {
+            message: err,
+        });
     }
 };
 
@@ -86,9 +121,12 @@ exports.getListPaging = async (data) => {
             },
             paginateOptions
         );
-        return { rootCategoryRecords, rest };
+        const rootCategoryJSON = rootCategoryRecords.toJSON();
+        return { rootCategoryJSON, rest };
     } catch (error) {
-        logger.error(error)
+        throw new APIError('Cant getListPaging rootCategory', config.httpStatus.BadRequest, {
+            message: error,
+        });
     }
 };
 
@@ -100,60 +138,77 @@ exports.megaMenu = async () => {
                 match: { isActive: true },
                 populate: [{ path: 'listChild' }],
             });
-        return megaMenu;
+        return megaMenu.toJSON();
     } catch (error) {
-        logger.error(error)
+        throw new APIError('Cant get megaMenu rootCategory', config.httpStatus.BadRequest, {
+            message: error,
+        });
     }
 };
 
-exports.update = (data) => {
-    const {
-        _id: id,
-        name,
-        description,
-        updatedBy
-    } = data;
-    const category = {
-        name,
-        description,
-        updatedBy
-    };
-    const editRootCategory = ModelRootCategory.findByIdAndUpdate(id, { $set: category }, function (err, category) {
-        if (err) {
-            console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
-            return null
+exports.update = async (data) => {
+    try {
+        const {
+            _id: id,
+            name,
+            description,
+            updatedBy
+        } = data;
+        const category = {
+            name,
+            description,
+            updatedBy
         };
-    });
-    return editRootCategory;
+        const editRootCategory = await ModelRootCategory.findByIdAndUpdate(id, { $set: category }, function (err, category) {
+            if (err) {
+                throw new APIError('Cant update rootCategory', config.httpStatus.BadRequest, {
+                    message: err,
+                });
+            };
+        }).exec();
+        return editRootCategory.toJSON();
+    } catch (error) {
+        throw new APIError('Cant update rootCategory', config.httpStatus.BadRequest, {
+            message: error,
+        });
+    }
 };
 
-exports.deleteItem = (data) => {
-    const {
-        id,
-        updatedBy
-    } = data;
-
-    const delRootCategory = ModelRootCategory.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy } }, function (err, category) {
-        if (err) {
-            console.log(err);
-            return null
-        };
-    });
-    return delRootCategory;
+exports.deleteItem = async (data) => {
+    try {
+        const {
+            id,
+            updatedBy
+        } = data;
+        const delRootCategory = await ModelRootCategory.findByIdAndUpdate(id, { $set: { isActive: false, updatedBy } }, function (err, category) {
+            if (err) {
+                throw new APIError('Cant deleteItem rootCategory', config.httpStatus.BadRequest, {
+                    message: err,
+                });
+            };
+        }).exec();
+        return delRootCategory.toJSON();
+    } catch (error) {
+        throw new APIError('Cant deleteItem rootCategory', config.httpStatus.BadRequest, {
+            message: error,
+        });
+    }
 };
 
-exports.remove = (data) => {
+exports.remove = async (data) => {
     try {
         const { id } = data;
-        ModelRootCategory.findByIdAndRemove(id, function (err) {
+        const removeRootCategory = await ModelRootCategory.findByIdAndRemove(id, function (err) {
             if (err) {
-                logger.error(error)
+                throw new APIError('Cant remove rootCategory', config.httpStatus.BadRequest, {
+                    message: error,
+                });
             }
-        })
-        return true;
-    } catch {
-        logger.error(error)
-        return false
+        }).exec()
+        return removeRootCategory.toJSON();
+    } catch (error) {
+        throw new APIError('Cant remove rootCategory', config.httpStatus.BadRequest, {
+            message: error,
+        });
     }
 };

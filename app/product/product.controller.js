@@ -24,7 +24,9 @@ const ProductController = {
         })
         keyword.save(async function (err) {
           if (err) {
-            next(err);
+            throw new APIError('Cant save keyword', config.httpStatus.BadRequest,
+            err,
+          );
           }
         });
       }
@@ -173,12 +175,10 @@ const ProductController = {
       if (Array.isArray(req.body.products)) {
         len = req.body.products.length;
       }
-      console.log("dmm-------->", req.body.products[0][id]);
       for (i = 0; i < len; i++) {
         for (var id in req.body.products[i]) {
           console.log(id);
         }
-        console.log("dmmm----->", req.body.products[i][id]);
         ProductModel.update({ _id: id }, req.body.products[i][id], function (err, numAffected) {
           if (err) {
             throw new APIError('Err on update', config.httpStatus.BadRequest,

@@ -54,7 +54,9 @@ const KeywordController = {
       }
       return actionResponse.getDataSuccess(data);
     } catch (error) {
-      next(error);
+      throw new APIError('Cant get keyword', config.httpStatus.BadRequest, {
+        message: error,
+    });
     }
   }
 };
