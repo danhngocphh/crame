@@ -5,44 +5,25 @@ const { APIError } = require('../../helpers');
 const logger = require('../../infrastructure/logger');
 
 exports.add = async (data) => {
-    try {
-        const { name, description, parentId, isRoot, createdBy, updatedBy } = data;
-        const category = new ModelRootCategory(
-            {
-                name,
-                description,
-                isRoot,
-                parentId,
-                createdBy,
-                updatedBy
-            }
-        );
-        await category.save(function (err) {
-            if (err) {
-                throw new APIError('Cant add rootCategory', config.httpStatus.BadRequest, {
-                    Message: err,
-                });
-            }
-        });
-        if (parentId) {
-            let getRootCategory = await ModelRootCategory.findById(parentId, function (err, category) {
-                if (err) {
-                    throw new APIError('Cant find rootCategory to add parentId', config.httpStatus.BadRequest, {
-                        Message: err,
-                    });
-                };
-            }).exec();
-            if (getRootCategory) {
-                getRootCategory.listChild.push(category._id);
-                getRootCategory.save();
-            }
+    const { name, description, parentId, isRoot, createdBy, updatedBy } = data;
+    const category = new ModelRootCategory(
+        {
+            name,
+            description,
+            isRoot,
+            createdBy,
+            updatedBy
         }
-        return category.toJSON();
-    } catch {
-        throw new APIError('Cant add rootCategory', config.httpStatus.BadRequest, {
-            Message: `Try again`,
-        });
+    );
+    await category.save();
+    if (parentId) {
+        let getRootCategory = await ModelRootCategory.findById(parentId).exec();
+        if (getRootCategory) {
+            getRootCategory.listChild.push(category._id);
+            getRootCategory.save();
+        }
     }
+    return category;
 };
 
 exports.addChild = async (data) => {
