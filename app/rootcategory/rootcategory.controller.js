@@ -108,8 +108,8 @@ const rootCategoryController = {
   remove: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const { currentUser, params } = req;
-      const list = await rootCategoryService.remove({ ...params, updatedBy: currentUser.id });
+      const { params } = req;
+      const list = await rootCategoryService.remove(params);
       if (list) {
         return actionResponse.getDataSuccess({ ...list });
       } else {
