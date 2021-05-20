@@ -142,16 +142,37 @@ exports.update = async (data) => {
         const category = {
             updatedBy
         };
-        if(parentId){
+        const findRootCategory = await ModelRootCategory.findById(id);
+        if (parentId) {
             category.parentId = parentId;
+            // remove child
+            let getParentRootCategory = await ModelRootCategory.findById(findRootCategory.parentId);
+            if (getParentRootCategory) {
+                getParentRootCategory.listChild.pull(id);
+                getParentRootCategory.save();
+              } else {
+                throw new APIError('Cant getParentRootCategory', config.httpStatus.BadRequest, {
+                  msg: "Fail to getParentRootCategory. Check your database, pls!"
+                });
+              }
+            // add child
+            let getRootCategory = await ModelRootCategory.findById(parentId)
+            if (getRootCategory) {
+                getRootCategory.listChild.push(id);
+                getRootCategory.save();
+            } else {
+                throw new APIError('Cant find parent of rootcategory', config.httpStatus.BadRequest, {
+                    msg: "Fail to getRootCategory. Check your database, pls!"
+                });
+            }
         }
-        if(name){
+        if (name) {
             category.name = name;
         }
-        if(description){
+        if (description) {
             category.description = description;
         }
-        if(isRoot){
+        if (isRoot) {
             category.isRoot = isRoot;
         }
         const editRootCategory = await ModelRootCategory.findByIdAndUpdate(id, { $set: category }, function (err, category) {
@@ -193,11 +214,24 @@ exports.deleteItem = async (data) => {
 exports.remove = async (data) => {
     try {
         const { id } = data;
+        const findRootCategory = await ModelRootCategory.findById(id);
         const removeRootCategory = await ModelRootCategory.findByIdAndRemove(id, function (err) {
             if (err) {
                 throw new APIError('Cant remove rootCategory', config.httpStatus.BadRequest, {
-                    message: error,
+                    message: err,
                 });
+            } else {
+                if (findRootCategory.listChild && findRootCategory.listChild.length > 0) {
+                    findRootCategory.listChild.forEach(async (idChild) => {
+                        await ModelRootCategory.findByIdAndRemove(idChild, function (err) {
+                            if (err) {
+                                throw new APIError(`Cant remove idChild: ${idChild}`, config.httpStatus.BadRequest, {
+                                    message: err,
+                                });
+                            }
+                        });
+                    })
+                }
             }
         }).exec()
         return removeRootCategory.toJSON();
