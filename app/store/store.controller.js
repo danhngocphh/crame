@@ -18,8 +18,8 @@ const storeController = {
     try {
       const actionResponse = new ActionResponse(res);
       const { query, paginateOptions } = req;
-      const { storeJson, rest } = await storeService.getListPaging({ ...query, paginateOptions })
-      return actionResponse.getPaginateDataSuccess(storeJson, rest);
+      const { storeRecords, rest } = await storeService.getListPaging({ ...query, paginateOptions })
+      return actionResponse.getPaginateDataSuccess(storeRecords, rest);
     } catch (error) {
       next(error);
     }

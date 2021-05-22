@@ -63,10 +63,10 @@ exports.getListPaging = async (data) => {
             },
             paginateOptions
         );
-        const storeJson = storeRecords.toJson();
-        return { storeJson, rest };
+        // const storeJson = storeRecords.toJSON();
+        return { storeRecords, rest };
     } catch (error) {
-        next(error);
+        throw error;
     }
 };
 

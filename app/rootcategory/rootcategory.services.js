@@ -184,9 +184,7 @@ exports.update = async (data) => {
         }).exec();
         return editRootCategory.toJSON();
     } catch (error) {
-        throw new APIError('Cant update rootCategory', config.httpStatus.BadRequest, {
-            message: error,
-        });
+        throw error;
     }
 };
 
