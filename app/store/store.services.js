@@ -31,13 +31,7 @@ exports.add = async (data) => {
             updatedBy
         }
     );
-    const add = await store.save(function (err) {
-        if (err) {
-            console.log(err);
-            res.send(JSON.stringify({ status: "error", value: "Error, db request failed" }));
-            return null
-        }
-    })
+    await store.save()
     return add;
 };
 
