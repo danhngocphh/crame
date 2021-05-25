@@ -5,52 +5,46 @@ const rootCategorySchema = require('./rootcategory.schema');
 
 const route = Router();
 
-route.all('*', Middleware.isAuth);
+// route.all('*', Middleware.isAuth);
 /* Handle current user */
 
-route.get(
-    '/mega-menu',
-    rootCategoryController.megaMenu
-);
+route.get('/mega-menu', rootCategoryController.megaMenu);
 
 route
-    .route('/')
-    .get(rootCategoryController.getListPaging)
-    .post(
-        Middleware.isValidate(rootCategorySchema.add),
-        rootCategoryController.add
-    )
+  .route('/')
+  .get(rootCategoryController.getListPaging)
+  .post(
+    Middleware.isAuth,
+    Middleware.isValidate(rootCategorySchema.add),
+    rootCategoryController.add
+  );
 
 route
-    .route('/:id')
-    .get(rootCategoryController.getById)
-    .delete(rootCategoryController.deleteItem)
-    .put(
-        Middleware.isValidate(rootCategorySchema.update),
-        rootCategoryController.update
-    )
+  .route('/:id')
+  .get(Middleware.isAuth, rootCategoryController.getById)
+  .delete(Middleware.isAuth, rootCategoryController.deleteItem)
+  .put(
+    Middleware.isAuth,
+    Middleware.isValidate(rootCategorySchema.update),
+    rootCategoryController.update
+  );
 
 route.post(
-    '/child',
-    Middleware.isValidate(rootCategorySchema.addChildCategory),
-    rootCategoryController.addChildCategory
+  '/child',
+  Middleware.isValidate(rootCategorySchema.addChildCategory),
+  rootCategoryController.addChildCategory
 );
 
 route
-    .route('/listChild/:idRootCategory/:idChild')
-    .delete(rootCategoryController.deleteListChild)
-    .post(
-        rootCategoryController.addListChild
-    )
+  .route('/listChild/:idRootCategory/:idChild')
+  .delete(rootCategoryController.deleteListChild)
+  .post(rootCategoryController.addListChild);
 
 route.delete(
-    '/child/:idRootCategory/:idChildCategory',
-    rootCategoryController.deleteChildCategory
+  '/child/:idRootCategory/:idChildCategory',
+  rootCategoryController.deleteChildCategory
 );
 
-route.delete(
-    '/remove/:id',
-    rootCategoryController.remove
-);
+route.delete('/remove/:id', rootCategoryController.remove);
 
 module.exports = route;

@@ -27,7 +27,6 @@ const store = new mongoose.Schema({
     }],
     imgLogo: {
         type: String,
-        lowercase: true,
         require: true
     },
     createdBy:{

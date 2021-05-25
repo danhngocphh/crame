@@ -2,33 +2,29 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const product = new mongoose.Schema({
-  remoteId: {
-    type: String,
-    required: true,
-    unique: true
-  },
   storeId: {
     type: Schema.Types.ObjectId,
     ref: 'stores',
     required: true,
   },
-  rootCategoryId: [{
+  rootCategoryId: {
     type: Schema.Types.ObjectId,
     ref: 'rootcategories',
     required: true,
-  }],
+  },
   url: {
     type: String,
-    required: true
+    required: true,
+    unique: true,
   },
-  images: [String],
+  image: String,
   name: {
     type: String,
     required: true,
   },
   updated: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   price: {
     type: Number,
@@ -38,8 +34,10 @@ const product = new mongoose.Schema({
   priceMax: Number,
   isActive: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
+
+product.index({ name: 'text' });
 
 module.exports = mongoose.model('product', product);

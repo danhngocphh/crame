@@ -14,12 +14,13 @@ class ActionResponse {
     });
   }
 
-  getPaginateDataSuccess(items, { totalDocs, page }) {
+  getPaginateDataSuccess(items, { totalDocs, page, totalPages }) {
     return this.res.status(200).json({
       data: {
         pageOptions : {
           total : totalDocs,
           current : page,
+          pages: totalPages,
         },
         items,
       },

@@ -32,7 +32,7 @@ exports.add = async (data) => {
         }
     );
     await store.save()
-    return add;
+    return store;
 };
 
 exports.getById = (id) => {

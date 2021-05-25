@@ -7,10 +7,7 @@ const ProductController = require('./product.controller');
 const route = Router();
 route.param('productId', ProductService.findProductById);
 
-route.get(
-  '/related-products',
-  ProductController.relatedProducts
-);
+route.get('/related-products', ProductController.relatedProducts);
 
 route
   .route('/bulk')
@@ -25,24 +22,20 @@ route
   .delete(
     Middleware.isValidate(ProductSchema.deleteMultiple),
     ProductController.deleteMultiple
-  )
+  );
 
 route
   .route('/:id')
+  .get(ProductController.getById)
   .put(
     Middleware.isValidate(ProductSchema.updateOne),
     ProductController.updateOne
   )
-  .delete(
-    ProductController.deleteOne
-  );
+  .delete(ProductController.deleteOne);
 
-  route
+route
   .route('/')
-  .get(
-    Middleware.attachPaginateOptions,
-    ProductController.getAll
-  )
+  .get(Middleware.attachPaginateOptions, ProductController.getAll)
   .post(
     Middleware.isValidate(ProductSchema.createOne),
     ProductController.createOne

@@ -2,47 +2,65 @@ const _ = require('lodash');
 const { ActionResponse, APIError } = require('../../helpers');
 const {
   product: ProductModel,
-  keyword: KeywordModel
+  keyword: KeywordModel,
 } = require('../../infrastructure/database/models');
-const ProductService = require('./product.service')
-const config = require('../../config')
+const ProductService = require('./product.service');
+const config = require('../../config');
+
+const addKeyWord = (name) => {
+  if (name) {
+    let dateT = new Date(Date.now());
+    dateT.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' });
+    const keyword = new KeywordModel({
+      keyword: qName
+        .normalize('NFD')
+        .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
+        .toLowerCase(),
+      date: dateT,
+    });
+    return keyword.save();
+  }
+}
 
 const ProductController = {
   getAll: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const {
-        name: qName,
-        rootCategoryId: qRootCategoryId
-      } = req.query;
-      if (qName) {
-        let dateT = new Date(Date.now());
-        dateT.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
-        const keyword = new KeywordModel({
-          keyword: qName.normalize("NFD").replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '').toLowerCase(),
-          date: dateT
-        })
-        keyword.save(async function (err) {
-          if (err) {
-            throw new APIError('Cant save keyword', config.httpStatus.BadRequest,
-            err,
-          );
-          }
-        });
-      }
+      const { name: qName, rootCategoryId: qRootCategoryId } = req.query;
+      await addKeyWord(qName)
       const searchName = new RegExp(qName || '', 'i');
       const { docs: productRecord, ...rest } = await ProductModel.paginate(
         {
           $and: [
-            qName ? { name: searchName } : {},
-            qRootCategoryId ? { rootCategoryId: { "$in": [qRootCategoryId] } } : {},
-            { isActive: true }
+            qName ? { $text: { $search: searchName } } : {},
+            qRootCategoryId
+              ? { rootCategoryId: { $in: [qRootCategoryId] } }
+              : {},
+            { isActive: true },
           ],
         },
-        req.paginateOptions
+        {
+          ...req.paginateOptions,
+          sort: 'price',
+          populate: 'storeId',
+        }
       );
+      console.log(rest);
       const productJson = await ProductService.toJson(productRecord);
       return actionResponse.getPaginateDataSuccess(productJson, rest);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getById: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const productRecord = await ProductModel.findById(req.params.id).populate(
+        'storeId'
+      );
+      if (!productRecord)
+        throw new APIError('Product was not found', httpStatus.NotFound);
+      return actionResponse.getDataSuccess(productRecord);
     } catch (error) {
       next(error);
     }
@@ -63,7 +81,7 @@ const ProductController = {
         detail,
         brand,
         type,
-        productCompare
+        productCompare,
       } = req.body;
       const product = new ProductModel({
         storeId,
@@ -78,7 +96,7 @@ const ProductController = {
         detail,
         brand,
         type,
-        productCompare
+        productCompare,
       });
       product.save(async function (err) {
         if (!err) {
@@ -96,7 +114,7 @@ const ProductController = {
     try {
       const actionResponse = new ActionResponse(res);
       const id = req.params.id;
-      const product = {
+      const product = ({
         storeId,
         remoteId,
         rootCategoryId,
@@ -109,17 +127,24 @@ const ProductController = {
         detail,
         brand,
         type,
-        productCompare
-      } = req.body;
-      ProductModel.findOneAndUpdate({ _id: id }, { $set: product }, { new: true }, async (err, doc) => {
-        if (err) {
-          throw new APIError('Err on updateOne', config.httpStatus.BadRequest,
-            err,
-          );
+        productCompare,
+      } = req.body);
+      ProductModel.findOneAndUpdate(
+        { _id: id },
+        { $set: product },
+        { new: true },
+        async (err, doc) => {
+          if (err) {
+            throw new APIError(
+              'Err on updateOne',
+              config.httpStatus.BadRequest,
+              err
+            );
+          }
+          const productJson = await ProductService.toJson(doc);
+          return actionResponse.createdDataSuccess(productJson);
         }
-        const productJson = await ProductService.toJson(doc);
-        return actionResponse.createdDataSuccess(productJson);
-      });
+      );
     } catch (error) {
       next(error);
     }
@@ -134,8 +159,10 @@ const ProductController = {
             const productJson = await ProductService.toJson(product);
             return actionResponse.createdDataSuccess(productJson);
           } else {
-            throw new APIError('Err on delete', config.httpStatus.BadRequest,
-              err,
+            throw new APIError(
+              'Err on delete',
+              config.httpStatus.BadRequest,
+              err
             );
           }
         });
@@ -146,32 +173,20 @@ const ProductController = {
   },
   createMultiple: async (req, res, next) => {
     try {
-      let arrayProduct = [];
       const actionResponse = new ActionResponse(res);
-      if (Array.isArray(req.body.products)) {
-        arrayProduct = req.body.products;
-      } else {
-        throw new APIError('Products are not array', config.httpStatus.BadRequest,
-          "Try again!",
-        );
-      }
-      ProductModel.insertMany(arrayProduct)
-        .then(async function (docs) {
-          const productJson = await ProductService.toJson(docs);
-          return actionResponse.createdDataSuccess(productJson);
-        })
-        .catch(function (err) {
-          next(err);
-        });
+      await ProductModel.insertMany(req.body.products);
+      actionResponse.createdDataSuccess();
     } catch (error) {
+      console.log(error.message);
       next(error);
     }
   },
   updateMultiple: async (req, res, next) => {
     try {
-      var i, len = 0;
+      var i,
+        len = 0;
       const actionResponse = new ActionResponse(res);
-      console.log(req.body.products)
+      console.log(req.body.products);
       if (Array.isArray(req.body.products)) {
         len = req.body.products.length;
       }
@@ -179,13 +194,19 @@ const ProductController = {
         for (var id in req.body.products[i]) {
           console.log(id);
         }
-        ProductModel.update({ _id: id }, req.body.products[i][id], function (err, numAffected) {
-          if (err) {
-            throw new APIError('Err on update', config.httpStatus.BadRequest,
-              err,
-            );
+        ProductModel.update(
+          { _id: id },
+          req.body.products[i][id],
+          function (err, numAffected) {
+            if (err) {
+              throw new APIError(
+                'Err on update',
+                config.httpStatus.BadRequest,
+                err
+              );
+            }
           }
-        });
+        );
       }
       const productJson = await ProductService.toJson(doc);
       return actionResponse.createdDataSuccess(productJson);
@@ -195,22 +216,9 @@ const ProductController = {
   },
   deleteMultiple: async (req, res, next) => {
     try {
-      var i, len = 0;
+      const { urls } = req.body;
       const actionResponse = new ActionResponse(res);
-      if (Array.isArray(req.body.ids)) {
-        len = req.body.ids.length;
-      }
-      for (i = 0; i < len; i++) {
-        ProductModel.findById(req.body.ids[i], function (err, product) {
-          return product.remove(function (err) {
-            if (err) {
-              throw new APIError('Err on delete', config.httpStatus.BadRequest,
-                err,
-              );
-            }
-          });
-        });
-      }
+      await ProductModel.deleteMany({ url: { $in: urls } }).exec();
       return actionResponse.createdDataSuccess(req.body);
     } catch (error) {
       next(error);
@@ -219,22 +227,22 @@ const ProductController = {
   relatedProducts: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
-      const {
-        name: qName,
-        rootCategoryId: qRootCategoryId
-      } = req.query;
-      const arrKey = qName.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '').split(' ', 3);
-      const getKey = arrKey.join(" ");
+      const { name: qName, rootCategoryId: qRootCategoryId } = req.query;
+      const arrKey = qName
+        .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
+        .split(' ', 3);
+      console.log(arrKey);
+      const getKey = arrKey.join(' ');
       const search = new RegExp(getKey || '', 'i');
-      const productRecord = await ProductModel.find(
-        {
-          $and: [
-            qName ? { name: search } : {},
-            qRootCategoryId ? { rootCategoryId: { "$in": [qRootCategoryId] } } : {},
-            { isActive: true }
-          ],
-        }
-      ).limit(5);
+      const productRecord = await ProductModel.find({
+        $and: [
+          qName ? { $text: { $search: search } } : {},
+          qRootCategoryId ? { rootCategoryId: { $in: [qRootCategoryId] } } : {},
+          { isActive: true },
+        ],
+      })
+        .limit(5)
+        .populate('storeId');
       const productJson = await ProductService.toJson(productRecord);
       return actionResponse.getDataSuccess(productJson);
     } catch (error) {
