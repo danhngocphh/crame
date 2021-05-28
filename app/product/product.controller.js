@@ -3,6 +3,7 @@ const { ActionResponse, APIError } = require('../../helpers');
 const {
   product: ProductModel,
   keyword: KeywordModel,
+  rootCategory: RootCategoryModel,
 } = require('../../infrastructure/database/models');
 const ProductService = require('./product.service');
 const config = require('../../config');
@@ -12,7 +13,7 @@ const addKeyWord = (name) => {
     let dateT = new Date(Date.now());
     dateT.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' });
     const keyword = new KeywordModel({
-      keyword: qName
+      keyword: name
         .normalize('NFD')
         .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
         .toLowerCase(),
@@ -20,22 +21,61 @@ const addKeyWord = (name) => {
     });
     return keyword.save();
   }
-}
+};
+
+const getFamilyCategoryId = async (cateId) => {
+  let result = [];
+  const familyCategory = await RootCategoryModel.find({
+    isActive: true,
+    isRoot: true,
+    _id: cateId,
+  })
+    .populate({
+      path: 'listChild',
+      populate: [
+        {
+          path: 'listChild',
+          populate: [
+            {
+              path: 'listChild',
+            },
+          ],
+        },
+      ],
+    })
+    .exec();
+  _.forEach(familyCategory, (cate) => {
+    result.push(cate._id);
+    _.forEach(cate.listChild, (cate) => {
+      result.push(cate._id);
+      _.forEach(cate.listChild, (cate) => {
+        result.push(cate._id);
+      });
+    });
+  });
+  return result;
+};
+
+const getSameLevelCategory = async (cateId) => {
+  const category = await RootCategoryModel.find({ parentId: cateId }).exec();
+  return await RootCategoryModel.findById(category._id).populate({
+    path: 'listChild',
+  });
+};
 
 const ProductController = {
   getAll: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
       const { name: qName, rootCategoryId: qRootCategoryId } = req.query;
-      await addKeyWord(qName)
+      await addKeyWord(qName);
+      const allCateId = await getFamilyCategoryId(qRootCategoryId);
       const searchName = new RegExp(qName || '', 'i');
       const { docs: productRecord, ...rest } = await ProductModel.paginate(
         {
           $and: [
             qName ? { $text: { $search: searchName } } : {},
-            qRootCategoryId
-              ? { rootCategoryId: { $in: [qRootCategoryId] } }
-              : {},
+            qRootCategoryId ? { rootCategoryId: { $in: allCateId } } : {},
             { isActive: true },
           ],
         },
@@ -45,7 +85,11 @@ const ProductController = {
           populate: 'storeId',
         }
       );
-      console.log(rest);
+      if(!_.isEmpty(productRecord)) {
+        const relateCategory = await getSameLevelCategory(productRecord[0].rootCategoryId);
+        console.log(relateCategory);
+      }
+
       const productJson = await ProductService.toJson(productRecord);
       return actionResponse.getPaginateDataSuccess(productJson, rest);
     } catch (error) {
