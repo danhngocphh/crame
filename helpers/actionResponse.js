@@ -14,6 +14,22 @@ class ActionResponse {
     });
   }
 
+  getProductSuccess(items, { totalDocs, page, totalPages }, meta) {
+    return this.res.status(200).json({
+      data: {
+        pageOptions : {
+          total : totalDocs,
+          current : page,
+          pages: totalPages,
+        },
+        items,
+        meta,
+      },
+      success: true,
+      title: this.title,
+    });
+  }
+
   getPaginateDataSuccess(items, { totalDocs, page, totalPages }) {
     return this.res.status(200).json({
       data: {

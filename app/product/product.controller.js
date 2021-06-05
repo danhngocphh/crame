@@ -24,7 +24,7 @@ const addKeyWord = (name) => {
 };
 
 const getFamilyCategoryId = async (cateId) => {
-  let result = [];
+  let result = [cateId];
   const familyCategory = await RootCategoryModel.find({
     isActive: true,
     isRoot: true,
@@ -56,42 +56,66 @@ const getFamilyCategoryId = async (cateId) => {
   return result;
 };
 
-const getSameLevelCategory = async (cateId) => {
-  const category = await RootCategoryModel.find({ parentId: cateId }).exec();
-  return await RootCategoryModel.findById(category._id).populate({
-    path: 'listChild',
-  });
+const getRelatedCategory = async (cateId) => {
+  const detailCategory = await RootCategoryModel.findById(cateId)
+    .populate({
+      path: 'listChild',
+    })
+    .exec();
+  if (detailCategory.isRoot) {
+    return [detailCategory, ...detailCategory.listChild];
+  }
+  const parentCategory = await RootCategoryModel.findById(
+    detailCategory.parentId
+  )
+    .populate({
+      path: 'listChild',
+    })
+    .exec();
+  return [parentCategory, ...parentCategory.listChild];
 };
 
 const ProductController = {
   getAll: async (req, res, next) => {
     try {
+      let relateCategory;
       const actionResponse = new ActionResponse(res);
-      const { name: qName, rootCategoryId: qRootCategoryId } = req.query;
+      const {
+        name: qName,
+        rootCategoryId: qRootCategoryId,
+        storeId: qStoreId,
+        priceFrom: qMinPrice,
+        priceTo: qMaxPrice,
+      } = req.query;
       await addKeyWord(qName);
       const allCateId = await getFamilyCategoryId(qRootCategoryId);
-      const searchName = new RegExp(qName || '', 'i');
       const { docs: productRecord, ...rest } = await ProductModel.paginate(
         {
           $and: [
-            qName ? { $text: { $search: searchName } } : {},
+            qName ? { $text: { $search: new RegExp(qName || '', 'i') } } : {},
             qRootCategoryId ? { rootCategoryId: { $in: allCateId } } : {},
+            qStoreId ? { storeId: qStoreId } : {},
+            { price: { $lte: qMaxPrice || 1000000000, $gte: qMinPrice || 0 } },
             { isActive: true },
           ],
         },
         {
           ...req.paginateOptions,
-          sort: 'price',
+          sort: qName ? { score: { $meta: "textScore" } } : {},
           populate: 'storeId',
         }
       );
-      if(!_.isEmpty(productRecord)) {
-        const relateCategory = await getSameLevelCategory(productRecord[0].rootCategoryId);
+      if (!_.isEmpty(productRecord)) {
+        relateCategory = await getRelatedCategory(
+          productRecord[0].rootCategoryId
+        );
         console.log(relateCategory);
       }
 
       const productJson = await ProductService.toJson(productRecord);
-      return actionResponse.getPaginateDataSuccess(productJson, rest);
+      return actionResponse.getProductSuccess(productJson, rest, {
+        relateCategory,
+      });
     } catch (error) {
       next(error);
     }
@@ -218,6 +242,7 @@ const ProductController = {
   createMultiple: async (req, res, next) => {
     try {
       const actionResponse = new ActionResponse(res);
+      await ProductModel.updateMany({});
       await ProductModel.insertMany(req.body.products);
       actionResponse.createdDataSuccess();
     } catch (error) {
