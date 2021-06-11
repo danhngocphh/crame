@@ -34,6 +34,10 @@ route
   .delete(ProductController.deleteOne);
 
 route
+  .route('/:productId/like')
+  .put(Middleware.isAuth, ProductController.likeProduct);
+
+route
   .route('/')
   .get(Middleware.attachPaginateOptions, ProductController.getAll)
   .post(

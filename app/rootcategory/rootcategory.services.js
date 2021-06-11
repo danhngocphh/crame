@@ -226,6 +226,7 @@ exports.remove = async (data) => {
     try {
         const { id } = data;
         const findRootCategory = await ModelRootCategory.findById(id);
+        if(!findRootCategory) throw new Error()
         const removeRootCategory = await ModelRootCategory.findByIdAndRemove(id, function (err) {
             if (err) {
                 throw new APIError('Cant remove rootCategory', config.httpStatus.BadRequest, {

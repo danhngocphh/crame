@@ -5,24 +5,27 @@ const storeSchema = require('./store.schema');
 
 const route = Router();
 
-route.all('*', Middleware.isAuth);
+// route.all('*', Middleware.isAuth);
 /* Handle current user */
 
 route
     .route('/:id')
     .get(storeController.getById)
     .delete(
+        Middleware.isAuth,
         storeController.remove
     );
 
 route
     .route('/')
     .post(
+        Middleware.isAuth,
         Middleware.isValidate(storeSchema.set),
         storeController.add
     )
     .get(storeController.getListPaging)
     .put(
+        Middleware.isAuth,
         Middleware.isValidate(storeSchema.set),
         storeController.update
     );

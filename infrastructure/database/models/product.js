@@ -32,6 +32,7 @@ const product = new mongoose.Schema({
   },
   priceMin: Number,
   priceMax: Number,
+  likes: [{ type: Schema.Types.ObjectId, ref: 'users' }],
   isActive: {
     type: Boolean,
     default: true,

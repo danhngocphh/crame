@@ -2,7 +2,10 @@ const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
 const { ActionResponse, APIError } = require('../../helpers');
-const { user: UserModel } = require('../../infrastructure/database/models');
+const {
+  user: UserModel,
+  product: ProductModel,
+} = require('../../infrastructure/database/models');
 const { imageService } = require('../../infrastructure/services');
 const config = require('../../config');
 const UserService = require('./user.service');
@@ -15,6 +18,15 @@ const UserController = {
     try {
       const actionResponse = new ActionResponse(res);
       const userJson = await UserService.toJson(req.currentUser);
+      const wishlist = await ProductModel.find({ likes: userJson.id });
+      return actionResponse.getDataSuccess({ ...userJson, wishlist });
+    } catch (error) {
+      next(error);
+    }
+  },
+  getWishList: async (req, rest, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
       return actionResponse.getDataSuccess(userJson);
     } catch (error) {
       next(error);
@@ -75,7 +87,7 @@ const UserController = {
         fullName: qFullName,
         role: qRole,
       } = req.query;
-      console.log(req.paginateOptions)
+      console.log(req.paginateOptions);
       const { docs: userRecords, ...rest } = await UserModel.paginate(
         {
           $and: [

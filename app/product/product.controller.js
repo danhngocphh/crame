@@ -75,6 +75,10 @@ const getRelatedCategory = async (cateId) => {
   return [parentCategory, ...parentCategory.listChild];
 };
 
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
 const ProductController = {
   getAll: async (req, res, next) => {
     try {
@@ -92,7 +96,7 @@ const ProductController = {
       const { docs: productRecord, ...rest } = await ProductModel.paginate(
         {
           $and: [
-            qName ? { $text: { $search: new RegExp(qName || '', 'i') } } : {},
+            qName ? { $text: { $search: new RegExp(escapeRegex(qName) || '', 'i') } } : {},
             qRootCategoryId ? { rootCategoryId: { $in: allCateId } } : {},
             qStoreId ? { storeId: qStoreId } : {},
             { price: { $lte: qMaxPrice || 1000000000, $gte: qMinPrice || 0 } },
@@ -101,7 +105,7 @@ const ProductController = {
         },
         {
           ...req.paginateOptions,
-          sort: qName ? { score: { $meta: "textScore" } } : {},
+          sort: qName ? { score: { $meta: 'textScore' } } : {},
           populate: 'storeId',
         }
       );
@@ -129,6 +133,21 @@ const ProductController = {
       if (!productRecord)
         throw new APIError('Product was not found', httpStatus.NotFound);
       return actionResponse.getDataSuccess(productRecord);
+    } catch (error) {
+      next(error);
+    }
+  },
+  likeProduct: async (req, res, next) => {
+    try {
+      const actionResponse = new ActionResponse(res);
+      const result = await ProductModel.findByIdAndUpdate(
+        req.product._id,
+        {
+          likes: _.xor(req.product.likes.map(i => i.toString()), [req.currentUser._id.toString()]),
+        },
+        { new: true }
+      ).exec();
+      return actionResponse.getDataSuccess(result);
     } catch (error) {
       next(error);
     }
